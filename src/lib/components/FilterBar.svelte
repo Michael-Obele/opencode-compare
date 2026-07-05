@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Search, X, Brain, Code, Zap, Globe, Shield } from '@lucide/svelte';
+	import { Search, X, Brain, Code, Zap, Globe, Trophy, Bot, Calculator } from '@lucide/svelte';
 
 	interface Props {
 		filter: string;
@@ -14,32 +14,13 @@
 		{ value: '', label: 'All', icon: Globe },
 		{ value: 'brainstorming', label: 'Brainstorming', icon: Brain },
 		{ value: 'coding', label: 'Coding', icon: Code },
-		{ value: 'competitive', label: 'Competitive', icon: Shield },
-		{ value: 'agentic', label: 'Agentic', icon: Zap },
-		{ value: 'budget', label: 'Budget', icon: Globe }
+		{ value: 'competitive', label: 'Competitive', icon: Trophy },
+		{ value: 'agentic', label: 'Agentic', icon: Bot },
+		{ value: 'budget', label: 'Budget', icon: Calculator }
 	];
 
 	function applyScenario(value: string) {
 		scenario = value;
-		switch (value) {
-			case 'brainstorming':
-				filter = 'reasoning';
-				break;
-			case 'coding':
-				filter = 'coding';
-				break;
-			case 'competitive':
-				filter = 'competitive';
-				break;
-			case 'agentic':
-				filter = 'agentic';
-				break;
-			case 'budget':
-				filter = 'quota';
-				break;
-			default:
-				filter = '';
-		}
 	}
 
 	function clearFilter() {
