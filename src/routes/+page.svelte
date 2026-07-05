@@ -5,7 +5,7 @@
 	import QuotaCalculator from '$lib/components/QuotaCalculator.svelte';
 	import ModelTable from '$lib/components/ModelTable.svelte';
 	import ModelDrawer from '$lib/components/ModelDrawer.svelte';
-	import { ArrowUpRight, Server, Brain, Zap, Flame, Snowflake } from 'lucide-svelte';
+	import { ArrowUpRight, Server, Brain, Zap, Flame, Snowflake } from '@lucide/svelte';
 
 	let filter = $state('');
 	let scenario = $state('');
