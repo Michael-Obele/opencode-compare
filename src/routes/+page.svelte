@@ -20,6 +20,8 @@
 	function closeDrawer() {
 		drawerOpen = false;
 	}
+
+	const modelsPromise = getModels();
 </script>
 
 <svelte:head>
@@ -61,7 +63,7 @@
 
 	<!-- Calculator -->
 	<section class="mb-10">
-		{#await getModels() then models}
+		{#await modelsPromise then models}
 			<QuotaCalculator
 				models={models.map((m) => ({
 					id: m.id,
@@ -75,7 +77,7 @@
 
 	<!-- Model Table -->
 	<section>
-		{#await getModels()}
+		{#await modelsPromise}
 			<div class="space-y-3">
 				<div class="h-10 animate-pulse rounded-lg bg-muted"></div>
 				<div class="h-64 animate-pulse rounded-xl bg-muted"></div>
