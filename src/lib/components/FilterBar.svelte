@@ -54,7 +54,8 @@
 		{#each scenarios as s}
 			{@const Icon = s.icon}
 			<button
-				class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all {scenario === s.value
+				class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all {scenario ===
+				s.value
 					? 'border-primary/40 bg-primary/10 text-primary'
 					: 'border-border bg-card text-muted-foreground hover:border-border hover:text-foreground'}"
 				onclick={() => applyScenario(s.value)}
@@ -76,7 +77,9 @@
 				Search
 			</button>
 		{:else}
-			<div class="relative inline-flex items-center rounded-lg border border-primary/40 bg-card px-3 py-2">
+			<div
+				class="relative inline-flex items-center rounded-lg border border-primary/40 bg-card px-3 py-2"
+			>
 				<Search class="mr-2 size-3.5 shrink-0 text-muted-foreground" />
 				<input
 					type="text"

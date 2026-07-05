@@ -80,7 +80,9 @@
 
 				<!-- Quota usage -->
 				<section>
-					<h3 class="mb-2 text-sm font-medium text-muted-foreground">Estimated requests per Go limit</h3>
+					<h3 class="mb-2 text-sm font-medium text-muted-foreground">
+						Estimated requests per Go limit
+					</h3>
 					<div class="grid grid-cols-3 gap-2 text-sm">
 						<div class="rounded-lg border border-border p-3 text-center">
 							<div class="text-xs text-muted-foreground">5 Hours ($12)</div>

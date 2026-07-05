@@ -110,7 +110,9 @@
 				>
 					Coding{sortIndicator('coding')}
 				</Table.Head>
-				<Table.Head class="hidden whitespace-nowrap text-muted-foreground md:table-cell">Best for</Table.Head>
+				<Table.Head class="hidden whitespace-nowrap text-muted-foreground md:table-cell"
+					>Best for</Table.Head
+				>
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
@@ -145,10 +147,15 @@
 							${model.pricing.inputPricePerM.toFixed(2)} /
 							<span class="text-muted-foreground">${model.pricing.outputPricePerM.toFixed(2)}</span>
 						</div>
-						<div class="text-xs text-muted-foreground">{priceLabel(model.pricing.inputPricePerM)}</div>
+						<div class="text-xs text-muted-foreground">
+							{priceLabel(model.pricing.inputPricePerM)}
+						</div>
 					</Table.Cell>
 					<Table.Cell>
-						<span class="inline-flex items-center gap-1 text-sm font-medium {burnColor(model.burnRate)}" title={burnLabel}>
+						<span
+							class="inline-flex items-center gap-1 text-sm font-medium {burnColor(model.burnRate)}"
+							title={burnLabel}
+						>
 							{model.burnRate === 'slow' ? 'Slow' : model.burnRate === 'fast' ? 'Fast' : 'Med'}
 						</span>
 					</Table.Cell>

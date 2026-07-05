@@ -82,7 +82,9 @@
 
 		<!-- Model picker via shadcn Select -->
 		<div>
-			<label for="model-select" class="mb-1.5 block text-sm text-muted-foreground"> Select a model </label>
+			<label for="model-select" class="mb-1.5 block text-sm text-muted-foreground">
+				Select a model
+			</label>
 			<Select.Root type="single" bind:value={selectedModelId}>
 				<Select.Trigger class="w-full" id="model-select">
 					{#if selectedModelId}
@@ -114,7 +116,8 @@
 							<span class="rounded-full bg-green-500/10 px-2 py-0.5 text-green-500">Slow burn</span>
 							<span class="text-muted-foreground">Great for high-volume use</span>
 						{:else if burnLevel === 'moderate'}
-							<span class="rounded-full bg-yellow-500/10 px-2 py-0.5 text-yellow-500">Moderate</span>
+							<span class="rounded-full bg-yellow-500/10 px-2 py-0.5 text-yellow-500">Moderate</span
+							>
 							<span class="text-muted-foreground">Balanced for daily use</span>
 						{:else}
 							<span class="rounded-full bg-red-500/10 px-2 py-0.5 text-red-500">Fast burn</span>
