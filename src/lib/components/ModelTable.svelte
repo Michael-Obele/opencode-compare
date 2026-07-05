@@ -6,11 +6,11 @@
 	interface Props {
 		models: GoModel[];
 		filter: string;
-		scenario?: string;
+		scenario: string;
 		onSelectModel: (model: GoModel) => void;
 	}
 
-	let { models, filter = $bindable(''), scenario = '', onSelectModel }: Props = $props();
+	let { models, filter = $bindable(''), scenario, onSelectModel }: Props = $props();
 
 	let filteredModels = $derived.by(() => {
 		let result = models;

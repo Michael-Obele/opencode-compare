@@ -5,7 +5,7 @@
 	import QuotaCalculator from '$lib/components/QuotaCalculator.svelte';
 	import ModelTable from '$lib/components/ModelTable.svelte';
 	import ModelDrawer from '$lib/components/ModelDrawer.svelte';
-	import { ArrowUpRight, Server, Brain, Zap, Flame, Snowflake } from '@lucide/svelte';
+	import { ArrowUpRight, Server, Brain, Zap } from '@lucide/svelte';
 
 	let filter = $state('');
 	let scenario = $state('');
@@ -34,24 +34,26 @@
 	<!-- Hero -->
 	<section class="mb-16 text-center">
 		<h1 class="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-			Find your <span
-				class="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-				>OpenCode Go</span
-			> model
+			Pick the right <span class="text-violet-600">OpenCode Go</span> model
 		</h1>
 		<p class="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
 			Live benchmarks from LLM Stats, algorithmic "best for" tags, and quota burn estimates — so you
-			make
-			<span class="text-foreground/70">economically informed</span> decisions, not guesses.
+			make economically informed decisions, not guesses.
 		</p>
 		<div class="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-			<span class="flex items-center gap-1">
+			<span
+				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
+			>
 				<Server class="size-3.5" /> 13+ models
 			</span>
-			<span class="flex items-center gap-1">
+			<span
+				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
+			>
 				<Brain class="size-3.5" /> Live benchmark data
 			</span>
-			<span class="flex items-center gap-1">
+			<span
+				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
+			>
 				<Zap class="size-3.5" /> $10/month subscription
 			</span>
 		</div>
@@ -60,34 +62,29 @@
 	<!-- Calculator -->
 	<section class="mb-10">
 		{#await getModels() then models}
-			<QuotaCalculator {models} />
+			<QuotaCalculator
+				models={models.map((m) => ({
+					id: m.id,
+					name: m.name,
+					pricing: m.pricing,
+					burnRate: m.burnRate
+				}))}
+			/>
 		{/await}
 	</section>
 
 	<!-- Model Table -->
 	<section>
-		<div class="mb-6">
-			<h2 class="text-2xl font-semibold text-foreground">Models</h2>
-			<p class="mt-1 text-sm text-muted-foreground">
-				Click any model to see full details, migration hints, and copy-paste config IDs.
-			</p>
-
-			<!-- Legend -->
-			<div class="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-				<span class="flex items-center gap-1">
-					<Snowflake class="size-3" /> Slow burn = more requests per quota window
-				</span>
-				<span class="flex items-center gap-1">
-					<Flame class="size-3" /> Fast burn = fewer requests, use for focused work
-				</span>
+		{#await getModels()}
+			<div class="space-y-3">
+				<div class="h-10 animate-pulse rounded-lg bg-muted"></div>
+				<div class="h-64 animate-pulse rounded-xl bg-muted"></div>
 			</div>
-		</div>
-
-		{#await getModels() then models}
+		{:then models}
 			<div class="mb-4">
 				<FilterBar bind:filter bind:scenario />
 			</div>
-			<ModelTable {models} {filter} onSelectModel={openDrawer} />
+			<ModelTable {models} {filter} {scenario} onSelectModel={openDrawer} />
 			<ModelDrawer model={selectedModel} open={drawerOpen} onClose={closeDrawer} />
 		{:catch err}
 			<div class="rounded-xl border border-red-500/20 bg-red-500/5 p-8 text-center">
