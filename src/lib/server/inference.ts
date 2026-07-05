@@ -13,7 +13,8 @@ import type {
 	MigrationHint,
 	ModelBenchmarks,
 	ModelSpeed,
-	ModelTag
+	ModelTag,
+	ScenarioScores
 } from '$lib/types/models';
 import { goEndpointType, goEndpointUrl, goIdToName } from './opencode-go';
 import { llmStatsModelUrl } from './llm-stats';
@@ -55,6 +56,18 @@ export function inferModel(
 	// Migration hints
 	const migrationHints = inferMigrationHints(goId, pricing, benchmarks);
 
+	const scenarioScores = inferScenarioScores(
+		goId,
+		pricing,
+		benchmarks,
+		burnRate,
+		speed,
+		llmStatsModel,
+		codingRankings,
+		reasoningRankings,
+		mathRankings
+	);
+
 	return {
 		id: goId,
 		name,
@@ -70,6 +83,7 @@ export function inferModel(
 		benchmarks,
 		speed,
 		migrationHints,
+		scenarioScores,
 		endpoint,
 		endpointUrl: goEndpointUrl(goId),
 		isNew: llmStatsModel === null,
@@ -287,6 +301,74 @@ function inferTags(
 	});
 }
 
+function inferScenarioScores(
+	goId: string,
+	pricing: ModelPricing,
+	benchmarks: ModelBenchmarks,
+	burnRate: BurnRate,
+	speed: ModelSpeed | null,
+	model: LLMStatsModel | null,
+	codingRankings: LLMStatsRanking[],
+	reasoningRankings: LLMStatsRanking[],
+	mathRankings: LLMStatsRanking[]
+): ScenarioScores {
+	const totalModels = codingRankings.length || 13;
+	const codingRank = codingRankings.findIndex((r) =>
+		r.model_name.toLowerCase().includes(goId.toLowerCase())
+	);
+	const reasoningRank = reasoningRankings.findIndex((r) =>
+		r.model_name.toLowerCase().includes(goId.toLowerCase())
+	);
+	const mathRank = mathRankings.findIndex((r) =>
+		r.model_name.toLowerCase().includes(goId.toLowerCase())
+	);
+
+	const ctx = model?.context_window ?? inferContextWindow(goId);
+	const totalPrice = pricing.inputPricePerM + pricing.outputPricePerM;
+	const quota = inferQuota(pricing);
+
+	// Coding: rank (inverted) + sweBench/codeArena + speed
+	const codingScore =
+		(codingRank >= 0 ? normalizeScore(totalModels - codingRank, totalModels) * 0.5 : 0) +
+		normalizeScore(benchmarks.sweBenchVerified ?? 0, 100) * 0.25 +
+		normalizeScore(benchmarks.codeArena ?? 0, 100) * 0.15 +
+		normalizeScore(speed?.tokensPerSecond ?? 0, 200) * 0.1;
+
+	// Brainstorming: reasoning rank + context + moderate burn
+	const brainstormingScore =
+		(reasoningRank >= 0 ? normalizeScore(totalModels - reasoningRank, totalModels) * 0.5 : 0) +
+		normalizeScore(ctx, 1_000_000) * 0.3 +
+		(burnRate === 'medium' ? 100 : burnRate === 'slow' ? 70 : 40) * 0.2;
+
+	// Competitive: sweBench + codeArena + coding rank
+	const competitiveScore =
+		normalizeScore(benchmarks.sweBenchVerified ?? 0, 100) * 0.4 +
+		normalizeScore(benchmarks.codeArena ?? 0, 100) * 0.35 +
+		(codingRank >= 0 ? normalizeScore(totalModels - codingRank, totalModels) * 0.25 : 0);
+
+	// Agentic: coding rank + context >= 256K + speed + tool support
+	const agenticContextBonus = ctx >= 500_000 ? 100 : ctx >= 256_000 ? 60 : 0;
+	const toolSupport = model?.inference?.supports_tools ? 100 : 50;
+	const agenticScore =
+		(codingRank >= 0 ? normalizeScore(totalModels - codingRank, totalModels) * 0.4 : 0) +
+		agenticContextBonus * 0.3 +
+		normalizeScore(speed?.tokensPerSecond ?? 0, 200) * 0.15 +
+		toolSupport * 0.15;
+
+	// Budget: low price + high requests per window
+	const budgetScore =
+		normalizeScore(Math.max(0, 10 - totalPrice), 10) * 0.6 +
+		normalizeScore(quota.requestsPer5h, 30_000) * 0.4;
+
+	return {
+		brainstorming: Math.round(brainstormingScore),
+		coding: Math.round(codingScore),
+		competitive: Math.round(competitiveScore),
+		agentic: Math.round(agenticScore),
+		budget: Math.round(budgetScore)
+	};
+}
+
 // ─── Migration Hints ─────────────────────────────────────────────────────
 
 function inferMigrationHints(
@@ -346,4 +428,9 @@ function inferContextWindow(goId: string): number {
 function formatContext(tokens: number): string {
 	if (tokens >= 1_000_000) return `${tokens / 1_000_000}M`;
 	return `${Math.round(tokens / 1_000)}K`;
+}
+
+function normalizeScore(value: number, max: number): number {
+	if (max <= 0) return 0;
+	return Math.min(100, Math.max(0, Math.round((value / max) * 100)));
 }
