@@ -34,6 +34,9 @@ export interface GoModel {
 	/** Burn rate tier based on pricing */
 	burnRate: BurnRate;
 
+	/** Per-scenario fit scores (0-100) */
+	scenarioScores: ScenarioScores;
+
 	/** Algorithmically inferred tags */
 	tags: ModelTag[];
 
@@ -63,6 +66,14 @@ export interface GoModel {
 }
 
 export type BurnRate = 'slow' | 'medium' | 'fast';
+
+export interface ScenarioScores {
+	brainstorming: number;
+	coding: number;
+	competitive: number;
+	agentic: number;
+	budget: number;
+}
 
 export interface ModelTag {
 	label: string;
