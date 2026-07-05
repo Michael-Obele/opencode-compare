@@ -1,49 +1,67 @@
 <script lang="ts">
 	import type { GoModel } from '$lib/types/models';
 	import * as Table from '$lib/components/ui/table/index.js';
+	import { Flame, Snowflake } from '@lucide/svelte';
 
 	interface Props {
 		models: GoModel[];
 		filter: string;
+		scenario?: string;
 		onSelectModel: (model: GoModel) => void;
 	}
 
-	let { models, filter = $bindable(''), onSelectModel }: Props = $props();
+	let { models, filter = $bindable(''), scenario = '', onSelectModel }: Props = $props();
 
 	let filteredModels = $derived.by(() => {
-		if (!filter) return models;
-		const q = filter.toLowerCase();
-		return models.filter(
-			(m) =>
-				m.name.toLowerCase().includes(q) ||
-				m.provider.toLowerCase().includes(q) ||
-				m.tags.some((t) => t.label.toLowerCase().includes(q))
-		);
+		let result = models;
+		if (filter) {
+			const q = filter.toLowerCase();
+			result = result.filter(
+				(m) =>
+					m.name.toLowerCase().includes(q) ||
+					m.provider.toLowerCase().includes(q) ||
+					m.tags.some((t) => t.label.toLowerCase().includes(q))
+			);
+		}
+		return result;
 	});
 
-	let sortKey = $state<'name' | 'coding' | 'price' | 'quota'>('coding');
+	let sortKey = $state<'name' | 'coding' | 'price' | 'quota' | 'fit'>('coding');
 	let sortDir = $state<'asc' | 'desc'>('desc');
 
 	let sortedModels = $derived.by(() => {
 		const copy = [...filteredModels];
-		copy.sort((a, b) => {
-			let cmp = 0;
-			switch (sortKey) {
-				case 'name':
-					cmp = a.name.localeCompare(b.name);
-					break;
-				case 'coding':
-					cmp = (a.benchmarks.coding ?? 0) - (b.benchmarks.coding ?? 0);
-					break;
-				case 'price':
-					cmp = b.pricing.inputPricePerM - a.pricing.inputPricePerM;
-					break;
-				case 'quota':
-					cmp = a.quota.requestsPer5h - b.quota.requestsPer5h;
-					break;
-			}
-			return sortDir === 'asc' ? cmp : -cmp;
-		});
+		if (scenario && sortKey !== 'fit') {
+			copy.sort(
+				(a, b) =>
+					b.scenarioScores[scenario as keyof GoModel['scenarioScores']] -
+					a.scenarioScores[scenario as keyof GoModel['scenarioScores']]
+			);
+		} else {
+			copy.sort((a, b) => {
+				let cmp = 0;
+				switch (sortKey) {
+					case 'name':
+						cmp = a.name.localeCompare(b.name);
+						break;
+					case 'coding':
+						cmp = (a.benchmarks.coding ?? 0) - (b.benchmarks.coding ?? 0);
+						break;
+					case 'price':
+						cmp = b.pricing.inputPricePerM - a.pricing.inputPricePerM;
+						break;
+					case 'quota':
+						cmp = a.quota.requestsPer5h - b.quota.requestsPer5h;
+						break;
+					case 'fit':
+						cmp =
+							(b.scenarioScores[scenario as keyof GoModel['scenarioScores']] ?? 0) -
+							(a.scenarioScores[scenario as keyof GoModel['scenarioScores']] ?? 0);
+						break;
+				}
+				return sortDir === 'asc' ? cmp : -cmp;
+			});
+		}
 		return copy;
 	});
 
@@ -67,17 +85,36 @@
 		return '$$$';
 	}
 
-	function burnColor(rate: string): string {
+	function burnClasses(rate: string): string {
 		switch (rate) {
 			case 'slow':
-				return 'text-green-400';
+				return 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20';
 			case 'medium':
-				return 'text-yellow-400';
+				return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
 			case 'fast':
-				return 'text-red-400';
+				return 'bg-red-500/10 text-red-500 border-red-500/20';
 			default:
-				return 'text-muted-foreground';
+				return 'bg-muted text-muted-foreground border-border';
 		}
+	}
+
+	function burnLabel(rate: string): string {
+		switch (rate) {
+			case 'slow':
+				return 'Slow burn';
+			case 'fast':
+				return 'Fast burn';
+			default:
+				return 'Moderate';
+		}
+	}
+
+	function fitSegments(score: number): number {
+		if (score >= 80) return 4;
+		if (score >= 60) return 3;
+		if (score >= 40) return 2;
+		if (score >= 20) return 1;
+		return 0;
 	}
 </script>
 
@@ -110,6 +147,14 @@
 				>
 					Coding{sortIndicator('coding')}
 				</Table.Head>
+				{#if scenario}
+					<Table.Head
+						class="w-24 cursor-pointer whitespace-nowrap text-muted-foreground hover:text-foreground"
+						onclick={() => toggleSort('fit')}
+					>
+						Fit{sortIndicator('fit')}
+					</Table.Head>
+				{/if}
 				<Table.Head class="hidden whitespace-nowrap text-muted-foreground md:table-cell"
 					>Best for</Table.Head
 				>
@@ -117,12 +162,6 @@
 		</Table.Header>
 		<Table.Body>
 			{#each sortedModels as model (model.id)}
-				{@const burnLabel =
-					model.burnRate === 'slow'
-						? 'Quota-friendly'
-						: model.burnRate === 'fast'
-							? 'Burns fast'
-							: 'Moderate'}
 				<Table.Row
 					class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50"
 					onclick={() => onSelectModel(model)}
@@ -153,10 +192,17 @@
 					</Table.Cell>
 					<Table.Cell>
 						<span
-							class="inline-flex items-center gap-1 text-sm font-medium {burnColor(model.burnRate)}"
-							title={burnLabel}
+							class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium {burnClasses(
+								model.burnRate
+							)}"
+							title={burnLabel(model.burnRate)}
 						>
-							{model.burnRate === 'slow' ? 'Slow' : model.burnRate === 'fast' ? 'Fast' : 'Med'}
+							{#if model.burnRate === 'slow'}
+								<Snowflake class="size-3" />
+							{:else if model.burnRate === 'fast'}
+								<Flame class="size-3" />
+							{/if}
+							{burnLabel(model.burnRate)}
 						</span>
 					</Table.Cell>
 					<Table.Cell class="text-sm tabular-nums text-muted-foreground/70">
@@ -169,9 +215,25 @@
 							<span class="text-muted-foreground/30">—</span>
 						{/if}
 					</Table.Cell>
+					{#if scenario}
+						{@const score = model.scenarioScores[scenario as keyof GoModel['scenarioScores']] ?? 0}
+						{@const segments = fitSegments(score)}
+						<Table.Cell>
+							<div class="flex items-center gap-1.5">
+								<div class="flex gap-0.5">
+									{#each Array(4) as _, i (i)}
+										<div
+											class="h-2 w-2 rounded-sm {i < segments ? 'bg-violet-500' : 'bg-muted'}"
+										></div>
+									{/each}
+								</div>
+								<span class="text-xs tabular-nums text-muted-foreground">{score}</span>
+							</div>
+						</Table.Cell>
+					{/if}
 					<Table.Cell class="hidden md:table-cell">
 						<div class="flex flex-wrap gap-1">
-							{#each model.tags.slice(0, 2) as tag}
+							{#each model.tags.slice(0, 2) as tag (tag.label)}
 								<span
 									class="inline-flex items-center gap-0.5 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground"
 								>
@@ -188,8 +250,8 @@
 				</Table.Row>
 			{:else}
 				<Table.Row>
-					<Table.Cell colspan={6} class="py-12 text-center text-muted-foreground">
-						No models match your filter. Try a different search term.
+					<Table.Cell colspan={scenario ? 7 : 6} class="py-12 text-center text-muted-foreground">
+						No models match your search. Try clearing the filter or switching scenarios.
 					</Table.Cell>
 				</Table.Row>
 			{/each}
