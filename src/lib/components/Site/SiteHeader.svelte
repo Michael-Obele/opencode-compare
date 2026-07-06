@@ -57,7 +57,8 @@
 				aria-label="ZenPick on GitHub"
 				class="hidden items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground sm:inline-flex"
 			>
-				<span class="font-mono">main</span>
+				<span class="font-mono">GitHub</span>
+
 				<ExternalLink class="size-3" />
 			</a>
 
