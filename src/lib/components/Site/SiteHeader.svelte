@@ -11,8 +11,8 @@
 
 	function isActive(href: string): boolean {
 		// ponytail: simple match — covers 2-page site, refine when nav grows
-		const path = page.url.pathname;
-		if (href === '/') return path === '/' || path === '';
+		const path: string = page.url.pathname;
+		if (href === '/') return path === '/';
 		return path === href || path.startsWith(href + '/');
 	}
 </script>
