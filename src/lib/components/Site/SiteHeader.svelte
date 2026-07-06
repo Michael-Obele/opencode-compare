@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Flame, Menu, X, ExternalLink } from '@lucide/svelte';
+	import { Receipt, Menu, X, ExternalLink } from '@lucide/svelte';
 	import { page } from '$app/state';
 
 	const links = [
@@ -29,7 +29,7 @@
 			class="flex items-center gap-2 font-mono text-sm font-semibold text-foreground transition-colors hover:text-primary"
 			aria-label="ZenPick home"
 		>
-			<Flame class="size-4 text-primary" />
+			<Receipt class="size-4 text-primary" />
 			<span>ZenPick</span>
 		</a>
 

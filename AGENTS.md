@@ -12,6 +12,13 @@
 
 ## Coding Conventions
 
+### Commit & Push Policy
+
+- **Never auto-commit, auto-push, or auto-merge.** The AI agent must stop after edits, run quality checks, and hand control back to the user.
+- The agent may **stage** changes (`git add`) to show what it changed, but the actual `git commit`, `git push`, PR creation, and any force operations must be done by the user after they review the diff.
+- When changes are complete, the agent should summarize what was changed, why, and which files were touched — then wait. Do not run `git commit` even if the user asked for the change to be "made and committed"; surface the staged state and ask for approval first.
+- This applies to all work in this repository, including chore commits, dependency bumps, formatting fixes, and doc updates.
+
 ### Quality Gate
 
 - **Formatting**: When using Bun, format only the files you have edited rather than the entire application. Use `bunx prettier --write <file_path>` for edited files. Additionally, verify changes with `bunx prettier --check <file_path>`. Avoid full-project formatting to prevent unnecessary file changes.

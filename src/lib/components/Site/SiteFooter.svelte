@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowUpRight, Flame } from '@lucide/svelte';
+	import { ArrowUpRight, Receipt } from '@lucide/svelte';
 
 	const year = new Date().getFullYear();
 </script>
@@ -9,7 +9,7 @@
 		class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-6 text-sm text-muted-foreground/70 sm:flex-row sm:justify-between"
 	>
 		<div class="flex items-center gap-2">
-			<Flame class="size-3.5 text-primary" />
+			<Receipt class="size-3.5 text-primary" />
 			<span>ZenPick · {year}</span>
 		</div>
 		<div class="flex flex-wrap items-center gap-x-4 gap-y-1">
