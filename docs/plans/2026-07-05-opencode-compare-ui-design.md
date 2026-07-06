@@ -17,13 +17,13 @@ Replace brittle tag matching with **scenario fit scores** (0–100). Every model
 
 ### Scoring Functions
 
-| Scenario | Scoring Logic |
-|---|---|
-| **Brainstorming** | reasoning benchmark rank + context window + moderate burn rate |
-| **Coding** | coding benchmark rank + SWE-bench / Code Arena + speed |
-| **Competitive** | SWE-bench + Code Arena + coding rank (no longer requires the exact tag) |
-| **Agentic** | coding rank + context window ≥ 256K + speed + tool support |
-| **Budget** | low total price + high requests-per-window |
+| Scenario          | Scoring Logic                                                           |
+| ----------------- | ----------------------------------------------------------------------- |
+| **Brainstorming** | reasoning benchmark rank + context window + moderate burn rate          |
+| **Coding**        | coding benchmark rank + SWE-bench / Code Arena + speed                  |
+| **Competitive**   | SWE-bench + Code Arena + coding rank (no longer requires the exact tag) |
+| **Agentic**       | coding rank + context window ≥ 256K + speed + tool support              |
+| **Budget**        | low total price + high requests-per-window                              |
 
 ### Behavior
 
@@ -38,14 +38,14 @@ Drop the blue-purple gradient hero. Use a solid-color "thermal" system to commun
 
 ### Palette
 
-| Token | Color | Usage |
-|---|---|---|
-| Cool / quota-friendly | `cyan-500` | Slow burn badges, low-cost accents |
-| Warm / moderate | `amber-500` | Moderate burn badges |
-| Hot / fast burn | `red-500` | Fast burn badges, high-cost accents |
-| Primary accent | `violet-600` | Active filters, interactive emphasis |
-| Background | `bg-background` | Page surface |
-| Text | `foreground` / `muted-foreground` | Body and secondary text |
+| Token                 | Color                             | Usage                                |
+| --------------------- | --------------------------------- | ------------------------------------ |
+| Cool / quota-friendly | `cyan-500`                        | Slow burn badges, low-cost accents   |
+| Warm / moderate       | `amber-500`                       | Moderate burn badges                 |
+| Hot / fast burn       | `red-500`                         | Fast burn badges, high-cost accents  |
+| Primary accent        | `violet-600`                      | Active filters, interactive emphasis |
+| Background            | `bg-background`                   | Page surface                         |
+| Text                  | `foreground` / `muted-foreground` | Body and secondary text              |
 
 No gradients.
 
@@ -126,17 +126,17 @@ Keep the existing Public Sans variable. Tighten the hero to a single strong stat
 
 ## Icon Mapping (Lucide)
 
-| Concept | Icon |
-|---|---|
-| Brainstorming | `Brain` |
-| Coding | `Code` |
-| Competitive | `Trophy` |
-| Agentic | `Bot` |
-| Budget | `Calculator` |
-| Burn fast | `Flame` |
-| Burn slow | `Snowflake` |
-| Speed | `Zap` |
-| All | `Globe` |
+| Concept       | Icon         |
+| ------------- | ------------ |
+| Brainstorming | `Brain`      |
+| Coding        | `Code`       |
+| Competitive   | `Trophy`     |
+| Agentic       | `Bot`        |
+| Budget        | `Calculator` |
+| Burn fast     | `Flame`      |
+| Burn slow     | `Snowflake`  |
+| Speed         | `Zap`        |
+| All           | `Globe`      |
 
 ## Error Handling
 
