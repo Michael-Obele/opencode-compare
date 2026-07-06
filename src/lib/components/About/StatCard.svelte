@@ -12,25 +12,8 @@
 </script>
 
 <div
-	class="group relative border border-border bg-card/40 p-5 transition-colors hover:border-primary/40"
+	class="group relative rounded-lg border border-border bg-card/40 p-5 transition-colors hover:border-primary/40"
 >
-	<div
-		class="absolute -left-px -top-px h-2 w-2 border-l border-t border-cyan-500/60"
-		aria-hidden="true"
-	></div>
-	<div
-		class="absolute -right-px -top-px h-2 w-2 border-r border-t border-cyan-500/60"
-		aria-hidden="true"
-	></div>
-	<div
-		class="absolute -bottom-px -left-px h-2 w-2 border-b border-l border-cyan-500/60"
-		aria-hidden="true"
-	></div>
-	<div
-		class="absolute -bottom-px -right-px h-2 w-2 border-b border-r border-cyan-500/60"
-		aria-hidden="true"
-	></div>
-
 	<div class="flex items-baseline gap-1">
 		<span class="font-mono text-4xl font-medium tabular-nums text-foreground">
 			{figure}

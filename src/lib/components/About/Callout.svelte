@@ -23,7 +23,7 @@
 </script>
 
 <aside
-	class="relative my-6 border-l-2 px-5 py-4 {variantClasses[variant]}"
+	class="relative my-6 rounded-l-lg border-l-2 px-5 py-4 {variantClasses[variant]}"
 	role="note"
 	aria-label={label}
 >

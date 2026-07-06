@@ -169,7 +169,7 @@
 		</div>
 
 		<!-- Worked example in monospace -->
-		<div class="my-6 border border-border bg-card/40 p-5">
+		<div class="my-6 rounded-lg border border-border bg-card/40 p-5">
 			<div class="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
 				worked example
 			</div>
@@ -256,7 +256,7 @@
 		</p>
 
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-			<div class="border border-cyan-500/20 bg-cyan-500/5 p-4">
+			<div class="rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-4">
 				<div class="mb-2 flex items-center gap-2">
 					<span class="inline-block h-2 w-2 rounded-full bg-cyan-500" aria-hidden="true"></span>
 					<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-500">slow</span>
@@ -264,7 +264,7 @@
 				<div class="font-mono text-2xl tabular-nums text-foreground">&lt; $1.50</div>
 				<div class="mt-1 text-xs text-muted-foreground">Combined price per 1M tokens.</div>
 			</div>
-			<div class="border border-amber-500/20 bg-amber-500/5 p-4">
+			<div class="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">
 				<div class="mb-2 flex items-center gap-2">
 					<span class="inline-block h-2 w-2 rounded-full bg-amber-500" aria-hidden="true"></span>
 					<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-500"
@@ -274,7 +274,7 @@
 				<div class="font-mono text-2xl tabular-nums text-foreground">$1.50 – $6.00</div>
 				<div class="mt-1 text-xs text-muted-foreground">Balanced daily use.</div>
 			</div>
-			<div class="border border-red-500/20 bg-red-500/5 p-4">
+			<div class="rounded-lg border border-red-500/20 bg-red-500/5 p-4">
 				<div class="mb-2 flex items-center gap-2">
 					<span class="inline-block h-2 w-2 rounded-full bg-red-500" aria-hidden="true"></span>
 					<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-red-500">fast</span>

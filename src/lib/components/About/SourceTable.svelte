@@ -26,7 +26,7 @@
 	];
 </script>
 
-<div class="border border-border bg-card/40">
+<div class="overflow-hidden rounded-lg border border-border bg-card/40">
 	<div
 		class="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
 	>
