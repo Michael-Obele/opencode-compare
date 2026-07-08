@@ -135,8 +135,15 @@
 		<!-- Cached reads toggle -->
 		<div>
 			<label class="flex items-center gap-2 text-sm text-muted-foreground">
-				<input type="checkbox" checked={useCached} class="accent-violet-600"
-					onclick={() => { useCached = !useCached; cachedPct = useCached ? 50 : 0; }} />
+				<input
+					type="checkbox"
+					checked={useCached}
+					class="accent-violet-600"
+					onclick={() => {
+						useCached = !useCached;
+						cachedPct = useCached ? 50 : 0;
+					}}
+				/>
 				<span>50% of input tokens are cached reads</span>
 			</label>
 		</div>
@@ -152,11 +159,16 @@
 
 				{#if selectedModel}
 					{@const level = burnRateFromPrice(
-						(selectedModel.pricing.inputPricePerM ?? 0) + (selectedModel.pricing.outputPricePerM ?? 0)
+						(selectedModel.pricing.inputPricePerM ?? 0) +
+							(selectedModel.pricing.outputPricePerM ?? 0)
 					)}
 					<div class="flex items-center gap-2 text-xs">
 						<span class="text-muted-foreground">
-							{level === 'slow' ? '❄️ Quota-friendly' : level === 'fast' ? '🔥 Burns fast' : '⚖️ Moderate'}
+							{level === 'slow'
+								? '❄️ Quota-friendly'
+								: level === 'fast'
+									? '🔥 Burns fast'
+									: '⚖️ Moderate'}
 						</span>
 						<span class="text-muted-foreground">
 							{level === 'slow'

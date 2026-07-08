@@ -11,7 +11,8 @@
 
 {#if source !== 'llm-stats'}
 	<span
-		class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium {source === 'fallback-map'
+		class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium {source ===
+		'fallback-map'
 			? 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
 			: 'bg-red-500/10 text-red-500 border border-red-500/20'}"
 		title={source === 'fallback-map'

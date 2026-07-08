@@ -9,6 +9,9 @@ export default defineConfig({
 		tailwindcss(),
 		sveltekit({
 			preprocess: vitePreprocess(),
+			alias: {
+				'@/*': './src/lib/components/*'
+			},
 			compilerOptions: {
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
@@ -16,6 +19,13 @@ export default defineConfig({
 			adapter: adapter(),
 			experimental: {
 				remoteFunctions: true
+			},
+			vitePlugin: {
+				inspector: {
+					toggleKeyCombo: 'alt-x',
+					showToggleButton: 'always',
+					toggleButtonPos: 'bottom-right'
+				}
 			}
 		})
 	]

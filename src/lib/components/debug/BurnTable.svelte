@@ -45,7 +45,11 @@
 						{#if m.burnDetails?.band != null}
 							<div class="h-2 w-24 overflow-hidden rounded-full bg-muted">
 								<div
-									class="h-full rounded-full {m.burnDetails.score >= 60 ? 'bg-emerald-500' : m.burnDetails.score >= 40 ? 'bg-amber-500' : 'bg-red-500'}"
+									class="h-full rounded-full {m.burnDetails.score >= 60
+										? 'bg-emerald-500'
+										: m.burnDetails.score >= 40
+											? 'bg-amber-500'
+											: 'bg-red-500'}"
 									style="width: {m.burnDetails.score}%"
 								></div>
 							</div>

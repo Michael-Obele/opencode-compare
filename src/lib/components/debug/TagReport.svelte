@@ -9,7 +9,9 @@
 </script>
 
 <h2 class="mb-4 text-lg font-semibold text-foreground">Tag Report</h2>
-<p class="mb-4 text-sm text-muted-foreground">Every tag assigned to each model, with source and value that triggered it.</p>
+<p class="mb-4 text-sm text-muted-foreground">
+	Every tag assigned to each model, with source and value that triggered it.
+</p>
 <div class="space-y-4">
 	{#each models as m (m.id)}
 		<div class="rounded-lg border border-border p-3">

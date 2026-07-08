@@ -47,20 +47,30 @@ export function burnBandFromScore(score: number): BurnBand {
 
 export function burnBandLabel(band: BurnBand): string {
 	switch (band) {
-		case 'excellent': return 'Excellent';
-		case 'good': return 'Good';
-		case 'moderate': return 'Moderate';
-		case 'high': return 'High';
-		case 'extreme': return 'Extreme';
+		case 'excellent':
+			return 'Excellent';
+		case 'good':
+			return 'Good';
+		case 'moderate':
+			return 'Moderate';
+		case 'high':
+			return 'High';
+		case 'extreme':
+			return 'Extreme';
 	}
 }
 
 export function burnBandColor(band: BurnBand): string {
 	switch (band) {
-		case 'excellent': return 'text-cyan-500';
-		case 'good': return 'text-emerald-500';
-		case 'moderate': return 'text-amber-500';
-		case 'high': return 'text-orange-500';
-		case 'extreme': return 'text-red-500';
+		case 'excellent':
+			return 'text-cyan-500';
+		case 'good':
+			return 'text-emerald-500';
+		case 'moderate':
+			return 'text-amber-500';
+		case 'high':
+			return 'text-orange-500';
+		case 'extreme':
+			return 'text-red-500';
 	}
 }

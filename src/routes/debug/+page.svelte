@@ -57,7 +57,8 @@
 	<div class="mb-6 flex flex-wrap gap-1.5">
 		{#each sections as s}
 			<button
-				class="inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition-all {activeSection === s.id
+				class="inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition-all {activeSection ===
+				s.id
 					? 'border-primary/40 bg-primary/10 text-primary'
 					: 'border-border bg-card text-muted-foreground hover:text-foreground'}"
 				onclick={() => (activeSection = s.id)}

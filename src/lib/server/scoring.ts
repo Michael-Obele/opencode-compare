@@ -112,7 +112,11 @@ function scoreQualityAgentic(benchmarks: ModelBenchmarks): number {
 	return scoreQualityCoding(benchmarks);
 }
 
-function scoreFitAgentic(ctx: number, speed: ModelSpeed | null, model: LLMStatsModel | null): number {
+function scoreFitAgentic(
+	ctx: number,
+	speed: ModelSpeed | null,
+	model: LLMStatsModel | null
+): number {
 	let score = 0;
 	let weight = 0;
 	score += normalize(Math.min(ctx, 1_000_000), 1_000_000) * 0.5;
@@ -128,10 +132,7 @@ function scoreFitAgentic(ctx: number, speed: ModelSpeed | null, model: LLMStatsM
 	return weight > 0 ? score / weight : 0.3;
 }
 
-function scoreQualityBudget(
-	pricing: ModelPricing,
-	burnDetails: BurnDetails
-): number {
+function scoreQualityBudget(pricing: ModelPricing, burnDetails: BurnDetails): number {
 	let score = 0;
 	let weight = 0;
 	if (pricing.inputPricePerM != null && pricing.outputPricePerM != null) {
@@ -161,10 +162,22 @@ export function computeScenarioScores(inputs: ScenarioInputs): ScenarioScores {
 	const reasoningRankPct = rankPercentile(reasoningRankIdx, inputs.reasoningRankings.length || 13);
 
 	return {
-		coding: computeScore(scoreQualityCoding(inputs.benchmarks), scoreFitCoding(inputs.speed, inputs.burnDetails)),
-		brainstorming: computeScore(scoreQualityReasoning(inputs.benchmarks), scoreFitBrainstorming(inputs.model?.context_window ?? 128_000, inputs.burnDetails)),
-		competitive: computeScore(scoreQualityCompetitive(inputs.benchmarks), scoreFitCompetitive(codingRankPct)),
-		agentic: computeScore(scoreQualityAgentic(inputs.benchmarks), scoreFitAgentic(inputs.model?.context_window ?? 128_000, inputs.speed, inputs.model)),
+		coding: computeScore(
+			scoreQualityCoding(inputs.benchmarks),
+			scoreFitCoding(inputs.speed, inputs.burnDetails)
+		),
+		brainstorming: computeScore(
+			scoreQualityReasoning(inputs.benchmarks),
+			scoreFitBrainstorming(inputs.model?.context_window ?? 128_000, inputs.burnDetails)
+		),
+		competitive: computeScore(
+			scoreQualityCompetitive(inputs.benchmarks),
+			scoreFitCompetitive(codingRankPct)
+		),
+		agentic: computeScore(
+			scoreQualityAgentic(inputs.benchmarks),
+			scoreFitAgentic(inputs.model?.context_window ?? 128_000, inputs.speed, inputs.model)
+		),
 		budget: computeScore(scoreQualityBudget(inputs.pricing, inputs.burnDetails), scoreFitBudget())
 	};
 }

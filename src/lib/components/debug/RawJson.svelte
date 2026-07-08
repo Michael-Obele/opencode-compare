@@ -28,7 +28,12 @@
 			{m.name}
 		</button>
 		{#if expanded.has(m.id)}
-			<pre class="max-h-96 overflow-auto rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">{JSON.stringify(m, null, 2)}</pre>
+			<pre
+				class="max-h-96 overflow-auto rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">{JSON.stringify(
+					m,
+					null,
+					2
+				)}</pre>
 		{/if}
 	{/each}
 </div>

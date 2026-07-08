@@ -26,7 +26,13 @@
 		</thead>
 		<tbody>
 			{#each models as m (m.id)}
-				<tr class="border-b border-border/50 hover:bg-muted/30 {m.pricing.source === 'unknown' ? 'bg-red-500/5' : m.pricing.source === 'fallback-map' ? 'bg-amber-500/5' : ''}">
+				<tr
+					class="border-b border-border/50 hover:bg-muted/30 {m.pricing.source === 'unknown'
+						? 'bg-red-500/5'
+						: m.pricing.source === 'fallback-map'
+							? 'bg-amber-500/5'
+							: ''}"
+				>
 					<td class="p-2 font-medium text-foreground">{m.name}</td>
 					<td class="p-2 tabular-nums text-muted-foreground">
 						{m.pricing.inputPricePerM != null ? `$${m.pricing.inputPricePerM.toFixed(4)}` : '—'}

@@ -213,7 +213,9 @@
 								>
 							</div>
 							<div class="flex items-center gap-1">
-								<span class="text-xs text-muted-foreground">{priceLabel(model.pricing.inputPricePerM)}</span>
+								<span class="text-xs text-muted-foreground"
+									>{priceLabel(model.pricing.inputPricePerM)}</span
+								>
 								<FallbackBadge source={model.pricing.source} />
 							</div>
 						{:else}
@@ -231,7 +233,11 @@
 							<div class="flex items-center gap-1.5">
 								<div class="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
 									<div
-										class="h-full rounded-full {model.burnDetails.score >= 60 ? 'bg-emerald-500' : model.burnDetails.score >= 40 ? 'bg-amber-500' : 'bg-red-500'}"
+										class="h-full rounded-full {model.burnDetails.score >= 60
+											? 'bg-emerald-500'
+											: model.burnDetails.score >= 40
+												? 'bg-amber-500'
+												: 'bg-red-500'}"
 										style="width: {model.burnDetails.score}%"
 									></div>
 								</div>

@@ -125,7 +125,10 @@ function inferMigrationHints(
 	].filter((h): h is MigrationHint => h !== null);
 }
 
-function codingMigrationHint(score: number | null, inputPrice: number | null): MigrationHint | null {
+function codingMigrationHint(
+	score: number | null,
+	inputPrice: number | null
+): MigrationHint | null {
 	if (!score || score <= 50 || !inputPrice) return null;
 	const multiplier = inputPrice < 1 ? '10x+' : '5x';
 	return {

@@ -29,9 +29,15 @@
 				<tr class="border-b border-border/50 hover:bg-muted/30 {m.isNew ? 'bg-amber-500/5' : ''}">
 					<td class="p-2 font-mono text-xs text-foreground">{m.id}</td>
 					<td class="p-2">{!m.isNew ? '✅' : '❌'}</td>
-					<td class="p-2">{m.benchmarks.coding != null ? `✅ ${m.benchmarks.coding.toFixed(1)}` : '❌'}</td>
-					<td class="p-2">{m.benchmarks.reasoning != null ? `✅ ${m.benchmarks.reasoning.toFixed(1)}` : '❌'}</td>
-					<td class="p-2">{m.benchmarks.math != null ? `✅ ${m.benchmarks.math.toFixed(1)}` : '❌'}</td>
+					<td class="p-2"
+						>{m.benchmarks.coding != null ? `✅ ${m.benchmarks.coding.toFixed(1)}` : '❌'}</td
+					>
+					<td class="p-2"
+						>{m.benchmarks.reasoning != null ? `✅ ${m.benchmarks.reasoning.toFixed(1)}` : '❌'}</td
+					>
+					<td class="p-2"
+						>{m.benchmarks.math != null ? `✅ ${m.benchmarks.math.toFixed(1)}` : '❌'}</td
+					>
 				</tr>
 			{/each}
 		</tbody>

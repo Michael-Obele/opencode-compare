@@ -76,11 +76,17 @@
 			</div>
 			<div class="rounded border border-border bg-card p-3">
 				<div class="text-xs text-muted-foreground">Fit</div>
-				<div class="text-lg tabular-nums text-foreground">{(score ?? 0) > 0 ? ((score ?? 0) / 100).toFixed(2) : 'N/A'}</div>
+				<div class="text-lg tabular-nums text-foreground">
+					{(score ?? 0) > 0 ? ((score ?? 0) / 100).toFixed(2) : 'N/A'}
+				</div>
 			</div>
 		</div>
 		<div class="mt-3 space-y-1 text-xs text-muted-foreground">
-			<div>Pricing: {model.pricing.inputPricePerM != null ? `$${model.pricing.inputPricePerM.toFixed(4)} in / $${model.pricing.outputPricePerM?.toFixed(4)} out` : 'unknown'}</div>
+			<div>
+				Pricing: {model.pricing.inputPricePerM != null
+					? `$${model.pricing.inputPricePerM.toFixed(4)} in / $${model.pricing.outputPricePerM?.toFixed(4)} out`
+					: 'unknown'}
+			</div>
 			<div>Burn: {model.burnDetails?.band ?? 'N/A'} ({model.burnDetails?.score ?? 0})</div>
 			<div>Coding benchmark: {model.benchmarks.coding?.toFixed(1) ?? '—'}</div>
 			<div>Reasoning: {model.benchmarks.reasoning?.toFixed(1) ?? '—'}</div>
@@ -89,7 +95,9 @@
 		</div>
 	</div>
 {:else if model}
-	<div class="rounded-lg border border-border bg-muted/30 p-4 text-center text-sm text-muted-foreground">
+	<div
+		class="rounded-lg border border-border bg-muted/30 p-4 text-center text-sm text-muted-foreground"
+	>
 		No score data available for this model/scenario.
 	</div>
 {/if}

@@ -75,7 +75,8 @@
 					<div class="rounded-lg border border-border bg-muted/30 p-3 text-sm">
 						<div class="font-medium text-foreground">
 							{#if model.burnDetails?.band != null}
-								{model.burnDetails.score} burn score — ~{model.quota.requestsPer5h.toLocaleString()} requests per $12 window
+								{model.burnDetails.score} burn score — ~{model.quota.requestsPer5h.toLocaleString()} requests
+								per $12 window
 							{:else}
 								Burn data unavailable — pricing unknown
 							{/if}
@@ -93,8 +94,12 @@
 				</div>
 
 				{#if model.pricing.source !== 'llm-stats'}
-					<div class="mx-4 mb-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2 text-xs text-amber-600">
-						Pricing source: {model.pricing.source === 'fallback-map' ? 'from OpenCode docs (may be outdated)' : 'unknown — contact OpenCode for accurate pricing'}
+					<div
+						class="mx-4 mb-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2 text-xs text-amber-600"
+					>
+						Pricing source: {model.pricing.source === 'fallback-map'
+							? 'from OpenCode docs (may be outdated)'
+							: 'unknown — contact OpenCode for accurate pricing'}
 					</div>
 				{/if}
 
@@ -106,13 +111,17 @@
 							<div class="rounded-lg border border-border p-3">
 								<div class="text-muted-foreground">Input</div>
 								<div class="text-lg tabular-nums text-foreground">
-									{model.pricing.inputPricePerM != null ? `$${model.pricing.inputPricePerM.toFixed(2)}` : '—'}
+									{model.pricing.inputPricePerM != null
+										? `$${model.pricing.inputPricePerM.toFixed(2)}`
+										: '—'}
 								</div>
 							</div>
 							<div class="rounded-lg border border-border p-3">
 								<div class="text-muted-foreground">Output</div>
 								<div class="text-lg tabular-nums text-foreground">
-									{model.pricing.outputPricePerM != null ? `$${model.pricing.outputPricePerM.toFixed(2)}` : '—'}
+									{model.pricing.outputPricePerM != null
+										? `$${model.pricing.outputPricePerM.toFixed(2)}`
+										: '—'}
 								</div>
 							</div>
 						</div>
@@ -161,7 +170,7 @@
 										<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
 											<div
 												class="h-full rounded-full bg-violet-500"
-										style="width: {benchmarkBarWidth(bench.value)}%"
+												style="width: {benchmarkBarWidth(bench.value)}%"
 											></div>
 										</div>
 									</div>
