@@ -147,9 +147,9 @@ export function computeBenchmarks(
 	const arenaKey = findScoreKey(allScores, 'code-arena');
 
 	return {
-		coding: codingRank?.score ?? null,
-		reasoning: reasoningRank?.score ?? null,
-		math: mathRank?.score ?? null,
+		coding: codingRank?.conservative_rating ?? null,
+		reasoning: reasoningRank?.conservative_rating ?? null,
+		math: mathRank?.conservative_rating ?? null,
 		sweBenchVerified: sweBenchKey ? allScores[sweBenchKey] : null,
 		codeArena: arenaKey ? allScores[arenaKey] : null,
 		allScores

@@ -172,6 +172,8 @@ export interface LLMStatsRanking {
 	model_name: string;
 	organization: string;
 	score: number;
+	/** TrueSkill μ−3σ conservative rating (0-70+ scale) */
+	conservative_rating: number;
 }
 
 // OpenCode Go API response
