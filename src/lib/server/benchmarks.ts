@@ -93,10 +93,12 @@ export function matchRanking(
 ): { ranking: LLMStatsRanking; confidence: number } | null {
 	const llmId = goIdToLlmStatsId(goId);
 	if (llmId) {
-		const exact = rankings.find((r) => r.model_name.toLowerCase().includes(llmId.toLowerCase()));
+		// Match by model_id (uses hyphens like our convention map)
+		const exact = rankings.find((r) => r.model_id === llmId);
 		if (exact) return { ranking: exact, confidence: 1.0 };
 	}
 
+	// Fallback: Levenshtein on display names
 	const goName = goIdToName(goId).toLowerCase();
 	let best: { ranking: LLMStatsRanking; confidence: number } | null = null;
 	for (const r of rankings) {

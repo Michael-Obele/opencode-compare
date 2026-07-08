@@ -5,7 +5,7 @@ import { fetchLLMStatsModels, fetchLLMStatsRankings } from '$lib/server/llm-stat
 import { inferModel } from '$lib/server/inference';
 import type { GoModel } from '$lib/types/models';
 
-const CACHE_KEY = 'go-models-enriched-v3';
+const CACHE_KEY = 'go-models-enriched-v4';
 
 /**
  * Fetch all enriched Go models.
@@ -36,11 +36,13 @@ export const getModels = query(async () => {
 async function refreshCache(): Promise<GoModel[]> {
 	const [goModels, llmModels, codingRankings, reasoningRankings, mathRankings] = await Promise.all([
 		fetchGoModels(),
-		fetchLLMStatsModels().catch(() => []),
-		fetchLLMStatsRankings('coding', 50).catch(() => []),
-		fetchLLMStatsRankings('reasoning', 50).catch(() => []),
-		fetchLLMStatsRankings('math', 50).catch(() => [])
+		fetchLLMStatsModels().catch((e) => { console.error('[refreshCache] LLM Stats models failed:', e.message); return []; }),
+		fetchLLMStatsRankings('coding', 50).catch((e) => { console.error('[refreshCache] coding rankings failed:', e.message); return []; }),
+		fetchLLMStatsRankings('reasoning', 50).catch((e) => { console.error('[refreshCache] reasoning rankings failed:', e.message); return []; }),
+		fetchLLMStatsRankings('math', 50).catch((e) => { console.error('[refreshCache] math rankings failed:', e.message); return []; })
 	]);
+
+	console.log(`[refreshCache] goModels=${goModels.length} llmModels=${llmModels.length} codingRanks=${codingRankings.length} reasoningRanks=${reasoningRankings.length} mathRanks=${mathRankings.length}`);
 
 	const enriched = goModels.map((gm) => {
 		const llmModel =
