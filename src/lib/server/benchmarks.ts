@@ -10,8 +10,8 @@ import { goIdToName } from './opencode-go';
 
 /** Map Go model IDs to LLM Stats model IDs where naming conventions align. */
 const CONVENTION_MAP: Record<string, string> = {
-	'deepseek-v4-pro': 'deepseek-v4-pro',
-	'deepseek-v4-flash': 'deepseek-v4-flash',
+	'deepseek-v4-pro': 'deepseek-v4-pro-max',
+	'deepseek-v4-flash': 'deepseek-v4-flash-max',
 	'glm-5.2': 'glm-5.2',
 	'glm-5.1': 'glm-5.1',
 	'kimi-k2.7-code': 'kimi-k2.7-code',
@@ -25,7 +25,7 @@ const CONVENTION_MAP: Record<string, string> = {
 	'qwen3.6-plus': 'qwen3.6-plus'
 };
 
-function goIdToLlmStatsId(goId: string): string | undefined {
+export function goIdToLlmStatsId(goId: string): string | undefined {
 	return CONVENTION_MAP[goId];
 }
 

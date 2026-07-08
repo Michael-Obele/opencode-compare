@@ -5,7 +5,7 @@ import { fetchLLMStatsModels, fetchLLMStatsRankings } from '$lib/server/llm-stat
 import { inferModel } from '$lib/server/inference';
 import type { GoModel } from '$lib/types/models';
 
-const CACHE_KEY = 'go-models-enriched-v5';
+const CACHE_KEY = 'go-models-enriched-v6';
 
 /**
  * Fetch all enriched Go models.

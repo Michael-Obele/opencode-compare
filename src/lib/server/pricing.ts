@@ -1,10 +1,11 @@
 import type { LLMStatsModel, LLMStatsRanking, ModelPricing } from '$lib/types/models';
-import { getFallbackPricingMap } from './opencode-go';
+import { getFallbackPricingMap, goIdToName } from './opencode-go';
+import { goIdToLlmStatsId } from './benchmarks';
 
 export function inferPricing(
 	goId: string,
 	model: LLMStatsModel | null,
-	codingRankings?: LLMStatsRanking[]
+	allRankings?: LLMStatsRanking[]
 ): ModelPricing {
 	// 1. Try LLM Stats provider data first
 	// available=null means "unknown", not "unavailable" — treat as usable
@@ -23,12 +24,19 @@ export function inferPricing(
 	}
 
 	// 2. Try min_input_price from rankings (still API data, not hardcoded)
-	if (codingRankings?.length) {
-		const match = codingRankings.find(
+	if (allRankings?.length) {
+		// Match via convention map first (handles goId → LLM Stats ID differences)
+		const llmId = goIdToLlmStatsId(goId);
+		const goName = goIdToName(goId).toLowerCase();
+		const match = allRankings.find(
 			(r) =>
+				(llmId && r.model_id === llmId) ||
 				r.model_id === goId ||
 				(model &&
-					(r.model_id === model.id || r.model_name.toLowerCase() === model.name.toLowerCase()))
+					(r.model_id === model.id || r.model_name.toLowerCase() === model.name.toLowerCase())) ||
+				r.model_name.toLowerCase() === goName ||
+				r.model_name.toLowerCase().includes(goName) ||
+				goName.includes(r.model_name.toLowerCase())
 		);
 		if (match?.min_input_price != null) {
 			return {
