@@ -1,6 +1,6 @@
 /** OpenCode Go API client — fetches list of available Go models. */
 
-import type { GoModelEntry } from '$lib/types/models';
+import type { GoModelEntry, ModelPricing } from '$lib/types/models';
 
 const GO_API_BASE = 'https://opencode.ai/zen/go/v1';
 
@@ -61,4 +61,23 @@ export function goEndpointUrl(id: string): string {
 	return goEndpointType(id) === 'anthropic-compatible'
 		? 'https://opencode.ai/zen/go/v1/messages'
 		: 'https://opencode.ai/zen/go/v1/chat/completions';
+}
+
+/** Known pricing from verified OpenCode docs (as of July 2026). */
+export function getFallbackPricingMap(): Record<string, ModelPricing> {
+	return {
+		'deepseek-v4-pro': { inputPricePerM: 1.74, outputPricePerM: 3.48, cachedReadPerM: 0.0145, source: 'fallback-map' },
+		'deepseek-v4-flash': { inputPricePerM: 0.14, outputPricePerM: 0.28, cachedReadPerM: 0.0028, source: 'fallback-map' },
+		'glm-5.2': { inputPricePerM: 1.4, outputPricePerM: 4.4, cachedReadPerM: 0.26, source: 'fallback-map' },
+		'glm-5.1': { inputPricePerM: 1.4, outputPricePerM: 4.4, cachedReadPerM: 0.26, source: 'fallback-map' },
+		'kimi-k2.7-code': { inputPricePerM: 0.95, outputPricePerM: 4.0, cachedReadPerM: 0.19, source: 'fallback-map' },
+		'kimi-k2.6': { inputPricePerM: 0.95, outputPricePerM: 4.0, cachedReadPerM: 0.16, source: 'fallback-map' },
+		'mimo-v2.5': { inputPricePerM: 0.14, outputPricePerM: 0.28, cachedReadPerM: 0.0028, source: 'fallback-map' },
+		'mimo-v2.5-pro': { inputPricePerM: 1.74, outputPricePerM: 3.48, cachedReadPerM: 0.0145, source: 'fallback-map' },
+		'minimax-m3': { inputPricePerM: 0.3, outputPricePerM: 1.2, cachedReadPerM: 0.06, source: 'fallback-map' },
+		'minimax-m2.7': { inputPricePerM: 0.3, outputPricePerM: 1.2, cachedReadPerM: 0.06, source: 'fallback-map' },
+		'qwen3.7-max': { inputPricePerM: 2.5, outputPricePerM: 7.5, cachedReadPerM: 0.5, source: 'fallback-map' },
+		'qwen3.7-plus': { inputPricePerM: 0.4, outputPricePerM: 1.6, cachedReadPerM: 0.04, source: 'fallback-map' },
+		'qwen3.6-plus': { inputPricePerM: 0.5, outputPricePerM: 3.0, cachedReadPerM: 0.05, source: 'fallback-map' }
+	};
 }
