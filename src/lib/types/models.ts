@@ -17,12 +17,10 @@ export interface GoModel {
 	releaseDate: string | null;
 
 	/** Pricing per 1M tokens */
-	pricing: {
-		inputPricePerM: number;
-		outputPricePerM: number;
-		/** Some models have tiered cached pricing, null if unavailable */
-		cachedReadPerM: number | null;
-	};
+	pricing: ModelPricing;
+
+	/** Burn efficiency details */
+	burnDetails: BurnDetails;
 
 	/** Estimated requests per Go quota window */
 	quota: {
@@ -67,6 +65,35 @@ export interface GoModel {
 
 import type { BurnRate } from '$lib/burn';
 export type { BurnRate };
+
+/** Where model pricing data came from */
+export type PricingSource = 'llm-stats' | 'fallback-map' | 'unknown';
+
+/** Named burn efficiency band */
+export type BurnBand = 'excellent' | 'good' | 'moderate' | 'high' | 'extreme';
+
+/** Shared pricing interface */
+export interface ModelPricing {
+	inputPricePerM: number | null;
+	outputPricePerM: number | null;
+	cachedReadPerM: number | null;
+	source: PricingSource;
+}
+
+/** Detailed burn efficiency */
+export interface BurnDetails {
+	score: number;
+	requestsPer12: number | null;
+	band: BurnBand | null;
+}
+
+/** TrueSkill-aware benchmark display info */
+export interface BenchmarkDisplay {
+	rawValue: number | null;
+	percentile: number | null;
+	barWidth: number;
+	barMax: number;
+}
 
 export interface ScenarioScores {
 	brainstorming: number;
