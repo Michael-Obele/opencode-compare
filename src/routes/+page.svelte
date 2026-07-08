@@ -5,7 +5,8 @@
 	import QuotaCalculator from '$lib/components/QuotaCalculator.svelte';
 	import ModelTable from '$lib/components/ModelTable.svelte';
 	import ModelDrawer from '$lib/components/ModelDrawer.svelte';
-	import { ArrowUpRight, Server, Brain, Zap } from '@lucide/svelte';
+	import { Server, Brain, Zap, BarChart3, Compass, Wallet, Sparkles } from '@lucide/svelte';
+	import * as Card from '$lib/components/ui/card';
 
 	let filter = $state('');
 	let scenario = $state('');
@@ -18,6 +19,32 @@
 	}
 
 	const modelsPromise = getModels();
+
+	const features = [
+		{
+			icon: BarChart3,
+			title: 'Live Benchmarks',
+			description: 'Real-time coding & reasoning scores pulled from LLM Stats — never stale.',
+			accent: 'text-violet-500',
+			bg: 'bg-violet-500/10'
+		},
+		{
+			icon: Compass,
+			title: 'Smart Recommendations',
+			description:
+				'Algorithmic best-for tags based on scenario scores — brainstorming, coding, agentic.',
+			accent: 'text-sky-500',
+			bg: 'bg-sky-500/10'
+		},
+		{
+			icon: Wallet,
+			title: 'Quota Burn Estimates',
+			description:
+				'See how fast each model burns your $10/month — make economically informed choices.',
+			accent: 'text-emerald-500',
+			bg: 'bg-emerald-500/10'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -28,37 +55,116 @@
 	/>
 </svelte:head>
 
-<div class="mx-auto max-w-6xl px-4 py-12">
-	<!-- Hero -->
-	<section class="mb-16 text-center">
-		<h1 class="mb-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-			Pick the right <span class="text-violet-600">OpenCode Go</span> model
-		</h1>
-		<p class="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-			Live benchmarks from LLM Stats, algorithmic "best for" tags, and quota burn estimates — so you
-			make economically informed decisions, not guesses.
-		</p>
-		<div class="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-			<span
-				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
-			>
-				<Server class="size-3.5" /> 13+ models
-			</span>
-			<span
-				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
-			>
-				<Brain class="size-3.5" /> Live benchmark data
-			</span>
-			<span
-				class="inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1"
-			>
-				<Zap class="size-3.5" /> $10/month subscription
-			</span>
-		</div>
-	</section>
+<!-- Hero with decorative background -->
+<div class="relative overflow-hidden">
+	<!-- Dot grid pattern -->
+	<div class="bg-dot-grid absolute inset-0 opacity-40"></div>
+	<!-- Radial glow -->
+	<div class="bg-hero-glow absolute inset-0"></div>
 
+	<div class="relative mx-auto max-w-6xl px-4 pb-6 pt-16 sm:pt-20">
+		<!-- Hero -->
+		<section class="mb-16 text-center">
+			<!-- Badge -->
+			<div class="animate-fade-in-up mb-6 inline-flex items-center gap-2">
+				<span
+					class="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary"
+				>
+					<Sparkles class="size-3" />
+					OpenCode Go Model Picker
+				</span>
+			</div>
+
+			<h1
+				class="animate-fade-in-up animation-delay-100 mb-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+			>
+				Pick the right
+				<br class="hidden sm:inline" />
+				<span class="text-primary">OpenCode Go</span> model
+			</h1>
+			<p
+				class="animate-fade-in-up animation-delay-200 mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground"
+			>
+				Live benchmarks, algorithmic recommendations, and quota burn estimates — so you make
+				<span class="text-foreground/80">economically informed</span> decisions, not guesses.
+			</p>
+
+			<!-- Stat pills -->
+			<div
+				class="animate-fade-in-up animation-delay-300 flex flex-wrap items-center justify-center gap-3"
+			>
+				<div
+					class="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+				>
+					<div class="flex size-8 items-center justify-center rounded-lg bg-violet-500/10">
+						<Server class="size-4 text-violet-500" />
+					</div>
+					<div class="text-left">
+						<div class="text-sm font-semibold text-foreground">13+ models</div>
+						<div class="text-xs text-muted-foreground">Live tracking</div>
+					</div>
+				</div>
+				<div
+					class="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+				>
+					<div class="flex size-8 items-center justify-center rounded-lg bg-sky-500/10">
+						<Brain class="size-4 text-sky-500" />
+					</div>
+					<div class="text-left">
+						<div class="text-sm font-semibold text-foreground">Live benchmarks</div>
+						<div class="text-xs text-muted-foreground">From LLM Stats</div>
+					</div>
+				</div>
+				<div
+					class="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-4 py-2.5 shadow-sm backdrop-blur-sm"
+				>
+					<div class="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10">
+						<Zap class="size-4 text-emerald-500" />
+					</div>
+					<div class="text-left">
+						<div class="text-sm font-semibold text-foreground">$10/month</div>
+						<div class="text-xs text-muted-foreground">Subscription tier</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Feature cards -->
+		<section class="mb-16">
+			<div class="grid gap-4 sm:grid-cols-3">
+				{#each features as feature, i (feature.title)}
+					{@const Icon = feature.icon}
+					<Card.Root
+						class="animate-fade-in-up group border-border/60 bg-card/50 transition-all duration-200 hover:border-border hover:shadow-md"
+						style="animation-delay: {200 + i * 100}ms"
+					>
+						<Card.Content class="p-5">
+							<div
+								class="mb-3 flex size-10 items-center justify-center rounded-xl {feature.bg} transition-transform duration-200 group-hover:scale-105"
+							>
+								<Icon class="size-5 {feature.accent}" />
+							</div>
+							<h3 class="mb-1 text-sm font-semibold text-foreground">{feature.title}</h3>
+							<p class="text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
+						</Card.Content>
+					</Card.Root>
+				{/each}
+			</div>
+		</section>
+	</div>
+</div>
+
+<!-- Main content -->
+<div class="mx-auto max-w-6xl px-4 pb-16">
 	<!-- Calculator -->
-	<section class="mb-10">
+	<section class="mb-12">
+		<div class="mb-4 flex items-center gap-2">
+			<div class="h-px flex-1 bg-border/60"></div>
+			<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground/60"
+				>Quota Calculator</span
+			>
+			<div class="h-px flex-1 bg-border/60"></div>
+		</div>
 		{#await modelsPromise then models}
 			<QuotaCalculator
 				models={models.map((m) => ({
@@ -79,6 +185,16 @@
 				<div class="h-64 animate-pulse rounded-xl bg-muted"></div>
 			</div>
 		{:then models}
+			<div class="mb-4 flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<h2 class="text-lg font-semibold text-foreground">Compare Models</h2>
+					<span
+						class="inline-flex items-center rounded-full border border-border bg-muted/50 px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+					>
+						{models.length} models
+					</span>
+				</div>
+			</div>
 			<div class="mb-4">
 				<FilterBar bind:filter bind:scenario />
 			</div>
