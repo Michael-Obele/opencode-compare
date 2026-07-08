@@ -126,6 +126,12 @@ export function getFallbackPricingMap(): Record<string, ModelPricing> {
 			cachedReadPerM: 0.06,
 			source: 'fallback-map'
 		},
+		'minimax-m2.5': {
+			inputPricePerM: 0.3,
+			outputPricePerM: 1.2,
+			cachedReadPerM: 0.06,
+			source: 'fallback-map'
+		},
 		'qwen3.7-max': {
 			inputPricePerM: 2.5,
 			outputPricePerM: 7.5,
