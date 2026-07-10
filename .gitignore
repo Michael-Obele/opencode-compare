@@ -23,11 +23,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .fallow/
 
-.docs/
-.playwright-mcp/page-2026-07-10T06-36-08-648Z.yml
-.playwright-mcp/page-2026-07-10T06-36-44-918Z.yml
-.playwright-mcp/page-2026-07-10T06-36-59-030Z.yml
-.playwright-mcp/page-2026-07-10T06-37-09-295Z.yml
-.playwright-mcp/page-2026-07-10T06-37-19-019Z.yml
-.playwright-mcp/page-2026-07-10T06-37-29-067Z.yml
-.playwright-mcp/page-2026-07-10T06-37-38-934Z.yml
+docs/
+.playwright-mcp/
