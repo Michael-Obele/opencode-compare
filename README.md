@@ -29,7 +29,7 @@ ZenPick answers three questions:
 - **🔥 Thermal burn badges** — ❄️ Quota-friendly (cyan) · 🌡️ Moderate (amber) · 🔥 Burns fast (red)
 - **🖥️ Detail drawer** — Per-model deep dive: pricing, quota estimates, benchmark bars, migration hints, one-tap copy model ID.
 - **🧮 Quota calculator** — Slider to estimate token usage and cost-per-request against your Go subscription.
-- **⚡ Live data** — Fetches from [LLM Stats](https://llm-stats.com) and [OpenCode Go](https://opencode.ai/docs/go/). Cached for 6 hours with stale-while-revalidate.
+- **⚡ Live data** — Fetches from [modelgrep](https://modelgrep.com) (OpenRouter pricing + Artificial Analysis benchmarks) and [OpenCode Go](https://opencode.ai/docs/go/). Cached for 6 hours with stale-while-revalidate.
 
 ---
 
@@ -41,7 +41,7 @@ ZenPick answers three questions:
 | Styling    | [Tailwind CSS v4](https://tailwindcss.com)                                  |
 | Components | [shadcn-svelte](https://shadcn-svelte.com) + [Bits UI](https://bits-ui.com) |
 | Icons      | [Lucide](https://lucide.dev)                                                |
-| Data       | LLM Stats API + OpenCode Go `/models` endpoint                              |
+| Data       | modelgrep API + OpenCode Go `/models` endpoint                              |
 | Runtime    | [Bun](https://bun.sh)                                                       |
 | Deployment | [Netlify](https://netlify.com)                                              |
 
@@ -59,7 +59,7 @@ bun install
 
 # Set up environment
 cp .env.example .env
-# Add your LLM_STATS_API_KEY and API_KEY to .env
+# No API keys needed — modelgrep is free and open
 
 # Start dev server
 bun run dev
@@ -76,7 +76,7 @@ src/
   lib/
     types/models.ts           — Shared type definitions
     server/
-      llm-stats.ts            — LLM Stats API client
+      modelgrep.ts            — modelgrep API client
       opencode-go.ts          — OpenCode Go /models endpoint
       inference.ts            — Algorithmic tag & scenario scoring
     cache.ts                  — In-memory TTL cache (6h)

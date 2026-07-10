@@ -5,7 +5,7 @@
 	// Drawn as an engineering block diagram with dimension lines and callouts.
 
 	const sources = [
-		{ id: 'llm-stats', label: 'LLM Stats API', sublabel: 'benchmarks · pricing' },
+		{ id: 'modelgrep', label: 'modelgrep.com API', sublabel: 'benchmarks · pricing · speed' },
 		{ id: 'opencode', label: 'OpenCode Go', sublabel: 'models · endpoints' }
 	];
 

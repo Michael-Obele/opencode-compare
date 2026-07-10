@@ -91,12 +91,6 @@
 		return { icon: sortDir === 'asc' ? ArrowUp : ArrowDown, active: true };
 	}
 
-	function priceLabel(price: number): string {
-		if (price < 0.3) return '$';
-		if (price < 1.5) return '$$';
-		return '$$$';
-	}
-
 	function fitSegments(score: number): number {
 		const thresholds = [80, 60, 40, 20];
 		return thresholds.findIndex((t) => score >= t);
@@ -213,14 +207,10 @@
 								>
 							</div>
 							<div class="flex items-center gap-1">
-								<span class="text-xs text-muted-foreground"
-									>{priceLabel(model.pricing.inputPricePerM)}</span
-								>
 								<FallbackBadge source={model.pricing.source} />
 							</div>
 						{:else}
 							<div class="flex items-center gap-1">
-								<span class="text-muted-foreground/30">—</span>
 								<FallbackBadge source={model.pricing.source} />
 							</div>
 						{/if}

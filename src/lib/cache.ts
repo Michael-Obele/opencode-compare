@@ -29,3 +29,6 @@ export function cacheSet<T>(key: string, data: T, ttl: number): void {
 
 /** Default TTL for model data: 6 hours. */
 export const MODELS_TTL = 6 * 60 * 60 * 1000;
+
+/** Default TTL for Go docs pricing: 24 hours (docs change infrequently). */
+export const GO_DOCS_PRICING_TTL = 24 * 60 * 60 * 1000;

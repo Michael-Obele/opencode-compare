@@ -3,6 +3,8 @@
 	import { burnRateFromPrice } from '$lib/burn';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import type { ModelPricing } from '$lib/types/models';
+	import { Label } from './ui/label';
+	import { Input } from './ui/input';
 
 	interface CalculatorModel {
 		id: string;
@@ -134,8 +136,8 @@
 
 		<!-- Cached reads toggle -->
 		<div>
-			<label class="flex items-center gap-2 text-sm text-muted-foreground">
-				<input
+			<Label class="flex items-center gap-2 text-sm text-muted-foreground">
+				<Input
 					type="checkbox"
 					checked={useCached}
 					class="accent-violet-600"
@@ -145,10 +147,10 @@
 					}}
 				/>
 				<span>50% of input tokens are cached reads</span>
-			</label>
+			</Label>
 		</div>
 
-		<!-- Results -->
+		<!-- Results -->opencode-go/
 		{#if selectedModel && costPerRequest != null}
 			<div class="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
 				<div class="text-sm text-muted-foreground">

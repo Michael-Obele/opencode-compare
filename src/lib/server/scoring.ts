@@ -1,13 +1,11 @@
 import type {
-	LLMStatsModel,
-	LLMStatsRanking,
+	ModelgrepModelData,
 	ModelBenchmarks,
 	ModelSpeed,
 	ScenarioScores,
 	BurnDetails,
 	ModelPricing
 } from '$lib/types/models';
-import { matchRanking } from './benchmarks';
 
 interface ScenarioInputs {
 	goId: string;
@@ -15,10 +13,7 @@ interface ScenarioInputs {
 	benchmarks: ModelBenchmarks;
 	burnDetails: BurnDetails;
 	speed: ModelSpeed | null;
-	model: LLMStatsModel | null;
-	codingRankings: LLMStatsRanking[];
-	reasoningRankings: LLMStatsRanking[];
-	mathRankings: LLMStatsRanking[];
+	mgModel: ModelgrepModelData | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────
@@ -28,36 +23,23 @@ function normalize(value: number, max: number): number {
 	return Math.min(1, Math.max(0, value / max));
 }
 
-/** Get rank position using strict matchRanking (convention map + Levenshtein). */
-function findRankPct(goId: string, rankings: LLMStatsRanking[]): number {
-	if (rankings.length === 0) return 0;
-	const matched = matchRanking(goId, rankings);
-	if (!matched) return 0;
-	const idx = rankings.findIndex((r) => r.model_name === matched.ranking.model_name);
-	if (idx < 0) return 0;
-	return Math.max(0, 1 - idx / rankings.length);
-}
-
-/** Compute a burn percentile by comparing this model's score to all other models. */
-function burnPercentile(burnScore: number, allBurnScores: number[]): number {
-	if (allBurnScores.length <= 1) return 0.5;
-	const worse = allBurnScores.filter((s) => s < burnScore).length;
-	return worse / (allBurnScores.length - 1);
-}
-
 // ─── Two-axis scoring ─────────────────────────────────────────────────
 
-function scoreQualityCoding(codingRankPct: number, benchmarks: ModelBenchmarks): number {
-	// Blend: coding rank percentile (70%) + raw benchmarks for tiebreaking (30%)
-	let score = codingRankPct * 0.7;
-	let weight = 0.7;
+function scoreQualityCoding(
+	benchmarks: ModelBenchmarks,
+	mgModel: ModelgrepModelData | null
+): number {
+	const aaCoding = mgModel?.benchmarks?.artificial_analysis?.coding;
+	let score = 0;
+	let weight = 0;
+
+	if (aaCoding != null) {
+		score += normalize(aaCoding, 100) * 0.7;
+		weight += 0.7;
+	}
 	if (benchmarks.sweBenchVerified != null) {
 		score += normalize(benchmarks.sweBenchVerified, 60) * 0.2;
 		weight += 0.2;
-	}
-	if (benchmarks.codeArena != null) {
-		score += normalize(benchmarks.codeArena, 80) * 0.1;
-		weight += 0.1;
 	}
 	return weight > 0 ? score / weight : 0;
 }
@@ -76,8 +58,9 @@ function scoreFitCoding(speed: ModelSpeed | null, burnDetails: BurnDetails): num
 	return weight > 0 ? score / weight : 0.5;
 }
 
-function scoreQualityReasoning(reasoningRankPct: number): number {
-	return reasoningRankPct;
+function scoreQualityReasoning(mgModel: ModelgrepModelData | null): number {
+	const aaIntel = mgModel?.benchmarks?.artificial_analysis?.intelligence;
+	return aaIntel != null ? normalize(aaIntel, 100) : 0;
 }
 
 function scoreFitBrainstorming(ctx: number, burnDetails: BurnDetails): number {
@@ -100,25 +83,26 @@ function scoreQualityCompetitive(benchmarks: ModelBenchmarks): number {
 		score += normalize(benchmarks.sweBenchVerified, 60) * 0.6;
 		weight += 0.6;
 	}
-	if (benchmarks.codeArena != null) {
-		score += normalize(benchmarks.codeArena, 80) * 0.4;
-		weight += 0.4;
-	}
 	return weight > 0 ? score / weight : 0;
 }
 
-function scoreFitCompetitive(codingRankPct: number): number {
-	return 0.5 + codingRankPct * 0.5;
+function scoreFitCompetitive(mgModel: ModelgrepModelData | null): number {
+	const aaCoding = mgModel?.benchmarks?.artificial_analysis?.coding;
+	const codingNorm = aaCoding != null ? normalize(aaCoding, 100) : 0;
+	return 0.5 + codingNorm * 0.5;
 }
 
-function scoreQualityAgentic(codingRankPct: number, benchmarks: ModelBenchmarks): number {
-	return scoreQualityCoding(codingRankPct, benchmarks);
+function scoreQualityAgentic(
+	benchmarks: ModelBenchmarks,
+	mgModel: ModelgrepModelData | null
+): number {
+	return scoreQualityCoding(benchmarks, mgModel);
 }
 
 function scoreFitAgentic(
 	ctx: number,
 	speed: ModelSpeed | null,
-	model: LLMStatsModel | null
+	mgModel: ModelgrepModelData | null
 ): number {
 	let score = 0;
 	let weight = 0;
@@ -128,8 +112,8 @@ function scoreFitAgentic(
 		score += normalize(speed.tokensPerSecond, 200) * 0.3;
 		weight += 0.3;
 	}
-	if (model?.inference?.supports_tools != null) {
-		score += (model.inference.supports_tools ? 1 : 0.3) * 0.2;
+	if (mgModel?.capabilities?.tools != null) {
+		score += (mgModel.capabilities.tools ? 1 : 0.3) * 0.2;
 		weight += 0.2;
 	}
 	return weight > 0 ? score / weight : 0.3;
@@ -143,7 +127,6 @@ function scoreQualityBudget(pricing: ModelPricing, burnDetails: BurnDetails): nu
 		score += Math.max(0, 1 - totalPrice / 10) * 0.4;
 		weight += 0.4;
 	}
-	// Use burn score normalized to 100 (score 51/100 = 0.51)
 	if (burnDetails.band != null) {
 		score += normalize(burnDetails.score, 100) * 0.6;
 		weight += 0.6;
@@ -158,25 +141,22 @@ function scoreFitBudget(): number {
 // ─── Public API ───────────────────────────────────────────────────────
 
 export function computeScenarioScores(inputs: ScenarioInputs): ScenarioScores {
-	const codingRankPct = findRankPct(inputs.goId, inputs.codingRankings);
-	const reasoningRankPct = findRankPct(inputs.goId, inputs.reasoningRankings);
-
 	return {
 		coding: computeScore(
-			scoreQualityCoding(codingRankPct, inputs.benchmarks),
+			scoreQualityCoding(inputs.benchmarks, inputs.mgModel),
 			scoreFitCoding(inputs.speed, inputs.burnDetails)
 		),
 		brainstorming: computeScore(
-			scoreQualityReasoning(reasoningRankPct),
-			scoreFitBrainstorming(inputs.model?.context_window ?? 128_000, inputs.burnDetails)
+			scoreQualityReasoning(inputs.mgModel),
+			scoreFitBrainstorming(inputs.mgModel?.context_length ?? 128_000, inputs.burnDetails)
 		),
 		competitive: computeScore(
 			scoreQualityCompetitive(inputs.benchmarks),
-			scoreFitCompetitive(codingRankPct)
+			scoreFitCompetitive(inputs.mgModel)
 		),
 		agentic: computeScore(
-			scoreQualityAgentic(codingRankPct, inputs.benchmarks),
-			scoreFitAgentic(inputs.model?.context_window ?? 128_000, inputs.speed, inputs.model)
+			scoreQualityAgentic(inputs.benchmarks, inputs.mgModel),
+			scoreFitAgentic(inputs.mgModel?.context_length ?? 128_000, inputs.speed, inputs.mgModel)
 		),
 		budget: computeScore(scoreQualityBudget(inputs.pricing, inputs.burnDetails), scoreFitBudget())
 	};

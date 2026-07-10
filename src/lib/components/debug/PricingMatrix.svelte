@@ -29,8 +29,8 @@
 				<tr
 					class="border-b border-border/50 hover:bg-muted/30 {m.pricing.source === 'unknown'
 						? 'bg-red-500/5'
-						: m.pricing.source === 'fallback-map'
-							? 'bg-amber-500/5'
+						: m.pricing.source === 'go-docs'
+							? 'bg-emerald-500/5'
 							: ''}"
 				>
 					<td class="p-2 font-medium text-foreground">{m.name}</td>

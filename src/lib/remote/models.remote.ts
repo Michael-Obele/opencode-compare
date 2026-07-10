@@ -1,11 +1,16 @@
 import { query } from '$app/server';
 import { cacheGet, cacheSet, MODELS_TTL } from '$lib/cache';
-import { fetchGoModels, goIdToName } from '$lib/server/opencode-go';
-import { fetchLLMStatsModels, fetchLLMStatsRankings } from '$lib/server/llm-stats';
+import { fetchGoModels } from '$lib/server/opencode-go';
+import {
+	fetchModelgrepModels,
+	goIdToModelgrepId,
+	fuzzyMatchModelgrep
+} from '$lib/server/modelgrep';
+import { fetchGoDocsPricing } from '$lib/server/go-docs';
 import { inferModel } from '$lib/server/inference';
-import type { GoModel } from '$lib/types/models';
+import type { GoModel, ModelPricing } from '$lib/types/models';
 
-const CACHE_KEY = 'go-models-enriched-v6';
+const CACHE_KEY = 'go-models-enriched-v8';
 
 /**
  * Fetch all enriched Go models.
@@ -15,58 +20,49 @@ const CACHE_KEY = 'go-models-enriched-v6';
 export const getModels = query(async () => {
 	const cached = cacheGet<GoModel[]>(CACHE_KEY);
 
-	// Return stale data immediately, refresh in background
 	if (cached && cached.stale) {
-		// ponytail: fire-and-forget refresh, don't await
 		refreshCache().catch(console.error);
 		return cached.data;
 	}
 
-	// Fresh cache hit
 	if (cached && !cached.stale) {
 		return cached.data;
 	}
 
-	// Cold start — must fetch
 	return await refreshCache();
 });
 
-// ─── Internal ─────────────────────────────────────────────────────────────
-
 async function refreshCache(): Promise<GoModel[]> {
-	const [goModels, llmModels, codingRankings, reasoningRankings, mathRankings] = await Promise.all([
+	const [goModels, mgResult, docsPricing] = await Promise.all([
 		fetchGoModels(),
-		fetchLLMStatsModels().catch((e) => {
-			console.error('[refreshCache] LLM Stats models failed:', e.message);
-			return [];
+		fetchModelgrepModels().catch((e: unknown) => {
+			const msg = e instanceof Error ? e.message : String(e);
+			console.error('[refreshCache] modelgrep failed:', msg);
+			return { byId: new Map(), all: [] };
 		}),
-		fetchLLMStatsRankings('coding', 50).catch((e) => {
-			console.error('[refreshCache] coding rankings failed:', e.message);
-			return [];
-		}),
-		fetchLLMStatsRankings('reasoning', 50).catch((e) => {
-			console.error('[refreshCache] reasoning rankings failed:', e.message);
-			return [];
-		}),
-		fetchLLMStatsRankings('math', 50).catch((e) => {
-			console.error('[refreshCache] math rankings failed:', e.message);
-			return [];
+		fetchGoDocsPricing().catch((e: unknown) => {
+			const msg = e instanceof Error ? e.message : String(e);
+			console.error('[refreshCache] go-docs failed:', msg);
+			return {} as Record<string, ModelPricing>;
 		})
 	]);
 
 	console.log(
-		`[refreshCache] goModels=${goModels.length} llmModels=${llmModels.length} codingRanks=${codingRankings.length} reasoningRanks=${reasoningRankings.length} mathRanks=${mathRankings.length}`
+		`[refreshCache] goModels=${goModels.length} modelgrepModels=${mgResult.byId.size} docsModels=${Object.keys(docsPricing).length}`
 	);
 
-	const enriched = goModels.map((gm) => {
-		const llmModel =
-			llmModels.find(
-				(m) =>
-					m.name.toLowerCase().includes(goIdToName(gm.id).toLowerCase()) ||
-					goIdToName(gm.id).toLowerCase().includes(m.name.toLowerCase())
-			) ?? null;
+	const filtered = goModels.filter((gm) => gm.id !== 'hy3-preview');
+	const enriched = filtered.map((gm) => {
+		// 1. Try exact map lookup
+		const mgId = goIdToModelgrepId(gm.id);
+		let mgModel = mgId ? (mgResult.byId.get(mgId) ?? null) : null;
 
-		return inferModel(gm.id, llmModel, codingRankings, reasoningRankings, mathRankings);
+		// 2. Fall back to fuzzy matching for models not in the map
+		if (!mgModel) {
+			mgModel = fuzzyMatchModelgrep(gm.id, mgResult.all);
+		}
+
+		return inferModel(gm.id, mgModel, docsPricing);
 	});
 
 	cacheSet(CACHE_KEY, enriched, MODELS_TTL);

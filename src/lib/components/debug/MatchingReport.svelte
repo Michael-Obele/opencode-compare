@@ -10,18 +10,17 @@
 
 <h2 class="mb-4 text-lg font-semibold text-foreground">Matching Report</h2>
 <p class="mb-4 text-sm text-muted-foreground">
-	How each Go model ID was matched to LLM Stats data. Confidence = 1.0 means convention map exact
-	match; lower means Levenshtein distance.
+	How each Go model ID was matched to modelgrep data (via hand-curated maker/model-id mapping).
 </p>
 <div class="overflow-x-auto">
 	<table class="w-full text-left text-sm">
 		<thead>
 			<tr class="border-b border-border text-muted-foreground">
 				<th class="p-2 font-medium">Go ID</th>
-				<th class="p-2 font-medium">Has LLM Stats?</th>
-				<th class="p-2 font-medium">Has Coding Rank?</th>
-				<th class="p-2 font-medium">Has Reasoning Rank?</th>
-				<th class="p-2 font-medium">Has Math Rank?</th>
+				<th class="p-2 font-medium">Has modelgrep match?</th>
+				<th class="p-2 font-medium">Has Coding Score?</th>
+				<th class="p-2 font-medium">Has Reasoning Score?</th>
+				<th class="p-2 font-medium">Has Math Score?</th>
 			</tr>
 		</thead>
 		<tbody>

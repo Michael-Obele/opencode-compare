@@ -7,7 +7,7 @@ export interface GoModel {
 	name: string;
 	/** Provider (e.g. "DeepSeek", "Alibaba", "Zhipu AI") */
 	provider: string;
-	/** Description from LLM Stats */
+	/** Description from modelgrep */
 	description: string;
 	/** Open-weight or proprietary */
 	openWeight: boolean;
@@ -38,10 +38,10 @@ export interface GoModel {
 	/** Algorithmically inferred tags */
 	tags: ModelTag[];
 
-	/** Benchmark scores from LLM Stats */
+	/** Benchmark scores from modelgrep */
 	benchmarks: ModelBenchmarks;
 
-	/** Speed metrics from LLM Stats inference block */
+	/** Speed metrics from modelgrep */
 	speed: ModelSpeed | null;
 
 	/** Migration hints: closed-source models this replaces */
@@ -53,11 +53,11 @@ export interface GoModel {
 	/** API endpoint URL */
 	endpointUrl: string;
 
-	/** Whether model is new (not yet in LLM Stats) */
+	/** Whether model is new (not yet in modelgrep) */
 	isNew: boolean;
 
-	/** Link to compare on LLM Stats */
-	llmStatsUrl: string;
+	/** Modelgrep model ID (e.g. "deepseek/deepseek-v4-pro"), null if unmatched */
+	modelgrepId: string | null;
 
 	/** Last time this data was fetched */
 	fetchedAt: number;
@@ -67,7 +67,7 @@ import type { BurnRate } from '$lib/burn';
 export type { BurnRate };
 
 /** Where model pricing data came from */
-export type PricingSource = 'llm-stats' | 'fallback-map' | 'unknown';
+export type PricingSource = 'go-docs' | 'modelgrep' | 'unknown';
 
 /** Named burn efficiency band */
 export type BurnBand = 'excellent' | 'good' | 'moderate' | 'high' | 'extreme';
@@ -105,7 +105,8 @@ export interface ScenarioScores {
 
 export interface ModelTag {
 	label: string;
-	emoji: string;
+	/** Lucide icon name (e.g. "code", "brain", "zap") */
+	icon: string;
 	/** How this tag was derived */
 	source: 'ranking' | 'context' | 'pricing' | 'computed';
 }
@@ -132,50 +133,55 @@ export interface MigrationHint {
 	reason: string;
 }
 
-// LLM Stats API response types (subset of what we use)
+// modelgrep.com API response types (aggregates OpenRouter + Artificial Analysis)
 
-export interface LLMStatsModel {
+export interface ModelgrepModelData {
+	/** modelgrep model ID, e.g. "deepseek/deepseek-v4-pro" */
 	id: string;
+	/** Display name, e.g. "DeepSeek: DeepSeek V4 Pro" */
 	name: string;
+	/** Maker slug, e.g. "deepseek", "z-ai" */
+	maker: string;
 	description: string;
-	organization: { id: string; name: string };
-	open_weight: boolean;
-	context_window: number | null;
-	release_date: string | null;
-	providers: LLMStatsProvider[];
-	top_scores: Record<string, number>;
-	inference: LLMStatsInference | null;
+	context_length: number;
+	max_output: number | null;
+	pricing: {
+		input: number;
+		output: number;
+		cache_read: number | null;
+		unit: 'usd_per_million_tokens';
+	} | null;
+	performance: {
+		throughput_tps: number | null;
+		latency_ms: number | null;
+		uptime: number | null;
+	};
+	capabilities: {
+		tools: boolean;
+		reasoning: boolean;
+		structured: boolean;
+		vision: boolean;
+	};
+	benchmarks: {
+		artificial_analysis: {
+			intelligence: number | null;
+			coding: number | null;
+			agentic: number | null;
+			gpqa: number | null;
+			hle: number | null;
+			scicode: number | null;
+			tau2: number | null;
+			intelligence_pct: number | null;
+			coding_pct: number | null;
+			agentic_pct: number | null;
+		} | null;
+		design_arena: {
+			elo: number;
+			win_rate: number;
+			elo_pct: number;
+		} | null;
+	};
 	url: string;
-	source: string;
-}
-
-export interface LLMStatsProvider {
-	provider_id: string;
-	provider_name: string;
-	input_price_per_m: number | null;
-	output_price_per_m: number | null;
-	available: boolean;
-	endpoint: string | null;
-}
-
-export interface LLMStatsInference {
-	available: boolean;
-	supports_vision: boolean;
-	supports_tools: boolean;
-	tokens_per_second?: number;
-	time_to_first_token?: number;
-}
-
-export interface LLMStatsRanking {
-	rank: number;
-	model_id: string;
-	model_name: string;
-	organization: string;
-	score: number;
-	/** TrueSkill μ−3σ conservative rating (0-70+ scale) */
-	conservative_rating: number;
-	/** Minimum input price across providers, from API */
-	min_input_price?: number | null;
 }
 
 // OpenCode Go API response

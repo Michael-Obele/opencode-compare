@@ -14,12 +14,12 @@
 		</div>
 		<div class="flex flex-wrap items-center gap-x-4 gap-y-1">
 			<a
-				href="https://llm-stats.com"
+				href="https://modelgrep.com"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="inline-flex items-center gap-1 underline-offset-4 hover:text-foreground hover:underline"
 			>
-				Data: LLM Stats <ArrowUpRight class="size-3" />
+				Data: modelgrep <ArrowUpRight class="size-3" />
 			</a>
 			<a
 				href="https://opencode.ai/docs/go/"

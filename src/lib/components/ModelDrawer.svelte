@@ -93,13 +93,11 @@
 					</div>
 				</div>
 
-				{#if model.pricing.source !== 'llm-stats'}
+				{#if model.pricing.source === 'unknown'}
 					<div
 						class="mx-4 mb-2 rounded-lg border border-amber-500/20 bg-amber-500/5 p-2 text-xs text-amber-600"
 					>
-						Pricing source: {model.pricing.source === 'fallback-map'
-							? 'from OpenCode docs (may be outdated)'
-							: 'unknown — contact OpenCode for accurate pricing'}
+						Pricing source: unknown — contact OpenCode for accurate pricing
 					</div>
 				{/if}
 
@@ -233,15 +231,15 @@
 								Copy model ID
 							{/if}
 						</button>
-						{#if model.llmStatsUrl}
+						{#if model.modelgrepId}
 							<a
-								href={model.llmStatsUrl}
+								href={'https://modelgrep.com/models/' + model.modelgrepId}
 								target="_blank"
 								rel="noopener noreferrer"
 								class={buttonVariants({ variant: 'outline', size: 'sm' })}
 							>
 								<ExternalLink class="size-3.5" />
-								Compare on LLM Stats
+								Compare on modelgrep
 							</a>
 						{/if}
 					</div>

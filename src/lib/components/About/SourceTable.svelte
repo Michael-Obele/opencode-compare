@@ -11,10 +11,10 @@
 
 	const sources: Source[] = [
 		{
-			provider: 'llm-stats.com',
-			href: 'https://llm-stats.com/',
-			license: 'Per LLM Stats API terms',
-			use: 'Benchmark scores, pricing, rankings, model metadata',
+			provider: 'modelgrep.com',
+			href: 'https://modelgrep.com/',
+			license: 'Free public API (no key required)',
+			use: 'Benchmark scores, OpenRouter pricing, speed/latency, model metadata',
 			required: true
 		},
 		{

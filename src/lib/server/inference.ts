@@ -1,43 +1,37 @@
 /**
  * Inference engine orchestrator.
- * Glues together pricing, quota, burn, benchmarks, scoring, and tags
- * modules to produce an enriched GoModel from raw API data.
+ * Glues together pricing, quota, burn, scoring, and tags
+ * modules to produce an enriched GoModel from modelgrep data.
  */
 
 import { burnRateFromPrice, type BurnRate } from '$lib/burn';
 import type {
 	GoModel,
-	LLMStatsModel,
-	LLMStatsRanking,
+	ModelgrepModelData,
 	MigrationHint,
+	ModelPricing,
 	ModelSpeed
 } from '$lib/types/models';
 import { goEndpointType, goEndpointUrl, goIdToName } from './opencode-go';
-import { llmStatsModelUrl } from './llm-stats';
 import { inferPricing } from './pricing';
 import { estimateQuota, DEFAULT_QUOTA_INPUTS } from './quota';
 import { inferBurnDetails } from './burn';
-import { matchRanking, computeBenchmarks } from './benchmarks';
 import { computeScenarioScores } from './scoring';
 import { computeTags } from './tags';
 
-/** Enrich a Go model ID with LLM Stats data and algorithmic inference. */
+/** Enrich a Go model ID with modelgrep data and optional docs pricing. */
 export function inferModel(
 	goId: string,
-	llmStatsModel: LLMStatsModel | null,
-	codingRankings: LLMStatsRanking[],
-	reasoningRankings: LLMStatsRanking[],
-	mathRankings: LLMStatsRanking[]
+	mgModel: ModelgrepModelData | null,
+	docsPricing?: Record<string, ModelPricing>
 ): GoModel {
 	const name = goIdToName(goId);
-	const pricing = inferPricing(goId, llmStatsModel, [
-		...codingRankings,
-		...reasoningRankings,
-		...mathRankings
-	]);
+	const pricing = inferPricing(goId, mgModel, docsPricing);
 	const burnDetails = inferBurnDetails(pricing);
+	const burnRate = burnRateFromPrice(
+		(pricing.inputPricePerM ?? 0) + (pricing.outputPricePerM ?? 0)
+	) as BurnRate;
 
-	// Quota using default token assumptions for the table
 	const quota = estimateQuota(
 		pricing,
 		DEFAULT_QUOTA_INPUTS.inputTokens,
@@ -45,23 +39,9 @@ export function inferModel(
 		DEFAULT_QUOTA_INPUTS.cachedInputTokens
 	);
 
-	const burnRate = burnRateFromPrice(
-		(pricing.inputPricePerM ?? 0) + (pricing.outputPricePerM ?? 0)
-	) as BurnRate;
-
-	const codingRank = matchRanking(goId, codingRankings);
-	const reasoningRank = matchRanking(goId, reasoningRankings);
-	const mathRank = matchRanking(goId, mathRankings);
-
-	const benchmarks = computeBenchmarks(
-		llmStatsModel,
-		codingRank?.ranking ?? null,
-		reasoningRank?.ranking ?? null,
-		mathRank?.ranking ?? null
-	);
-
-	const speed = inferSpeed(llmStatsModel);
-	const tags = computeTags(goId, benchmarks, burnDetails, speed, llmStatsModel, codingRankings);
+	const benchmarks = extractModelgrepBenchmarks(mgModel);
+	const speed = extractModelgrepSpeed(mgModel);
+	const tags = computeTags(benchmarks, burnDetails, speed, mgModel);
 	const migrationHints = inferMigrationHints(goId, pricing, benchmarks);
 	const scenarioScores = computeScenarioScores({
 		goId,
@@ -69,20 +49,17 @@ export function inferModel(
 		benchmarks,
 		burnDetails,
 		speed,
-		model: llmStatsModel,
-		codingRankings,
-		reasoningRankings,
-		mathRankings
+		mgModel
 	});
 
 	return {
 		id: goId,
 		name,
-		provider: llmStatsModel?.organization?.name ?? inferProvider(goId),
-		description: llmStatsModel?.description ?? '',
-		openWeight: llmStatsModel?.open_weight ?? true,
-		contextWindow: llmStatsModel?.context_window ?? inferContextWindow(goId),
-		releaseDate: llmStatsModel?.release_date ?? null,
+		provider: mgModel?.maker ?? inferProvider(goId),
+		description: mgModel?.description ?? '',
+		openWeight: true,
+		contextWindow: mgModel?.context_length ?? inferContextWindow(goId),
+		releaseDate: null,
 		pricing,
 		quota: {
 			requestsPer5h: quota?.requestsPer5h ?? 0,
@@ -98,20 +75,31 @@ export function inferModel(
 		scenarioScores,
 		endpoint: goEndpointType(goId),
 		endpointUrl: goEndpointUrl(goId),
-		isNew: llmStatsModel === null,
-		llmStatsUrl: llmStatsModel ? llmStatsModelUrl(llmStatsModel.id) : '',
+		isNew: mgModel === null,
+		modelgrepId: mgModel?.id ?? null,
 		fetchedAt: Date.now()
 	};
 }
 
-// ─── Speed ───────────────────────────────────────────────────────────────
+// ─── Extract modelgrep data ─────────────────────────────────────────────
 
-function inferSpeed(model: LLMStatsModel | null): ModelSpeed | null {
-	if (!model?.inference?.available) return null;
-	const inf = model.inference as unknown as Record<string, unknown>;
+function extractModelgrepBenchmarks(mgModel: ModelgrepModelData | null): GoModel['benchmarks'] {
+	const aa = mgModel?.benchmarks?.artificial_analysis;
 	return {
-		tokensPerSecond: (inf.tokens_per_second as number) ?? 0,
-		timeToFirstToken: (inf.time_to_first_token as number) ?? null
+		coding: aa?.coding ?? null,
+		reasoning: aa?.intelligence ?? null,
+		math: null,
+		sweBenchVerified: aa?.scicode ?? null,
+		codeArena: null,
+		allScores: {}
+	};
+}
+
+function extractModelgrepSpeed(mgModel: ModelgrepModelData | null): ModelSpeed | null {
+	if (!mgModel?.performance) return null;
+	return {
+		tokensPerSecond: mgModel.performance.throughput_tps ?? 0,
+		timeToFirstToken: mgModel.performance.latency_ms ?? null
 	};
 }
 
@@ -165,8 +153,7 @@ const PROVIDER_BY_PREFIX: Record<string, string> = {
 	glm: 'Zhipu AI',
 	kimi: 'Moonshot AI',
 	minimax: 'MiniMax',
-	mimo: 'Xiaomi',
-	hy3: 'Unknown'
+	mimo: 'Xiaomi'
 };
 
 function inferProvider(goId: string): string {
