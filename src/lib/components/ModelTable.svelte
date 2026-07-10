@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { GoModel } from '$lib/types/models';
 	import * as Table from '$lib/components/ui/table/index.js';
-	import { ArrowUp, ArrowDown, ArrowUpDown, SearchX, Hash } from '@lucide/svelte';
+	import { ArrowUp, ArrowDown, ArrowUpDown, SearchX } from '@lucide/svelte';
 	import BurnBadge from './BurnBadge.svelte';
 	import FallbackBadge from './FallbackBadge.svelte';
 
@@ -122,11 +122,7 @@
 	<Table.Root>
 		<Table.Header class="sticky top-0 z-10 bg-card">
 			<Table.Row class="border-b border-border hover:bg-transparent">
-				<Table.Head class="w-10 whitespace-nowrap text-muted-foreground">
-					<span class="inline-flex items-center gap-1">
-						<Hash class="size-3" />
-					</span>
-				</Table.Head>
+				<Table.Head class="w-10 whitespace-nowrap text-muted-foreground">SN</Table.Head>
 				{@const nameSort = sortIndicator('name')}
 				<Table.Head
 					class="cursor-pointer whitespace-nowrap text-muted-foreground hover:text-foreground"
