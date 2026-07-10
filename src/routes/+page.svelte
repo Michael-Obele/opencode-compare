@@ -5,6 +5,7 @@
 	import QuotaCalculator from '$lib/components/QuotaCalculator.svelte';
 	import ModelTable from '$lib/components/ModelTable.svelte';
 	import ModelDrawer from '$lib/components/ModelDrawer.svelte';
+	import ScenarioHelpDialog from '$lib/components/ScenarioHelpDialog.svelte';
 	import { Server, Brain, Zap, BarChart3, Compass, Wallet, Sparkles } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 
@@ -159,13 +160,6 @@
 <div class="mx-auto max-w-6xl px-4 pb-16">
 	<!-- Calculator -->
 	<section class="mb-12">
-		<div class="mb-4 flex items-center gap-2">
-			<div class="h-px flex-1 bg-border/60"></div>
-			<span class="text-xs font-medium uppercase tracking-wider text-muted-foreground/60"
-				>Quota Calculator</span
-			>
-			<div class="h-px flex-1 bg-border/60"></div>
-		</div>
 		{#await modelsPromise then models}
 			<QuotaCalculator
 				models={models.map((m) => ({
@@ -199,6 +193,7 @@
 					>
 						{models.length} models
 					</span>
+					<ScenarioHelpDialog />
 				</div>
 			</div>
 			<div class="mb-4">
