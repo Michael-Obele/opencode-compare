@@ -18,6 +18,13 @@
 			required: true
 		},
 		{
+			provider: 'llm-stats.com',
+			href: 'https://llm-stats.com/',
+			license: 'Per LLM Stats API terms',
+			use: 'Benchmark scores, rankings, pricing, model metadata',
+			required: true
+		},
+		{
 			provider: 'opencode.ai/docs/go',
 			href: 'https://opencode.ai/docs/go/',
 			license: 'Per OpenCode Go docs',
@@ -34,7 +41,7 @@
 			<Database class="size-3" />
 			data_sources.json
 		</span>
-		<span class="text-cyan-500">2 sources · required attribution</span>
+		<span class="text-cyan-500">3 sources · required attribution</span>
 	</div>
 
 	<table class="w-full text-left text-sm">

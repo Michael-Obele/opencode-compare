@@ -10,7 +10,7 @@
 	<title>About — ZenPick</title>
 	<meta
 		name="description"
-		content="ZenPick is a thermal-quota compass for OpenCode Go. It compares 13+ open coding models on benchmarks, pricing, and quota burn — data from modelgrep and OpenCode Go, attributed where required."
+		content="ZenPick is a thermal-quota compass for OpenCode Go. It compares 13+ open coding models on benchmarks, pricing, and quota burn — data from modelgrep, LLM Stats, and OpenCode Go, attributed where required."
 	/>
 </svelte:head>
 
@@ -122,12 +122,17 @@
 			<StatCard figure="10" unit="/mo" label="subscription" footnote="First month $5." />
 			<StatCard figure="13" unit="+" label="models tracked" footnote="Across 6 providers." />
 			<StatCard figure="6" unit="h" label="cache TTL" footnote="Stale-while-revalidate." />
-			<StatCard figure="324" label="upstream models" footnote="Cross-referenced via modelgrep." />
+			<StatCard
+				figure="324"
+				label="upstream models"
+				footnote="Cross-referenced via modelgrep + LLM Stats."
+			/>
 		</div>
 
 		<Callout variant="cyan" label="methodology note">
 			"Upstream" refers to the data aggregated at modelgrep.com (OpenRouter pricing + Artificial
-			Analysis benchmarks), which tracks every model we cross-check against.
+			Analysis benchmarks) and llm-stats.com (benchmark scores, rankings, and pricing), which tracks
+			every model we cross-check against.
 		</Callout>
 	</section>
 
@@ -193,8 +198,18 @@
 					modelgrep.com
 					<ExternalLink class="size-3" />
 				</a>
-				(OpenRouter pricing + Artificial Analysis benchmarks) and used with attribution.
-				The model list, endpoint types, and quota windows come from the
+				(OpenRouter pricing + Artificial Analysis benchmarks) and
+				<a
+					href="https://llm-stats.com/"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex items-center gap-0.5 text-cyan-500 underline-offset-4 hover:underline"
+				>
+					llm-stats.com
+					<ExternalLink class="size-3" />
+				</a>
+				(benchmark scores, rankings, and pricing), and used with attribution. The model list, endpoint
+				types, and quota windows come from the
 				<a
 					href="https://opencode.ai/docs/go/"
 					target="_blank"
@@ -207,8 +222,8 @@
 			</p>
 			<p class="text-muted-foreground">
 				Everything ZenPick computes on top — scenario fit scores, burn rate tiers, migration hints —
-				is derived from those two sources, in the schematic above. The data and the attribution are
-				kept close on purpose.
+				is derived from those sources, in the schematic above. The data and the attribution are kept
+				close on purpose.
 			</p>
 		</div>
 

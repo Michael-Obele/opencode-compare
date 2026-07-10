@@ -6,6 +6,7 @@
 
 	const sources = [
 		{ id: 'modelgrep', label: 'modelgrep.com API', sublabel: 'benchmarks · pricing · speed' },
+		{ id: 'llm-stats', label: 'llm-stats.com API', sublabel: 'rankings · scores · pricing' },
 		{ id: 'opencode', label: 'OpenCode Go', sublabel: 'models · endpoints' }
 	];
 

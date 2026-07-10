@@ -24,7 +24,8 @@
 		{
 			icon: BarChart3,
 			title: 'Live Benchmarks',
-			description: 'Real-time coding & reasoning scores pulled from modelgrep — never stale.',
+			description:
+				'Real-time coding & reasoning scores from modelgrep and LLM Stats — never stale.',
 			accent: 'text-violet-500',
 			bg: 'bg-violet-500/10'
 		},
@@ -112,7 +113,7 @@
 					</div>
 					<div class="text-left">
 						<div class="text-sm font-semibold text-foreground">Live benchmarks</div>
-						<div class="text-xs text-muted-foreground">From modelgrep</div>
+						<div class="text-xs text-muted-foreground">From modelgrep + LLM Stats</div>
 					</div>
 				</div>
 				<div
