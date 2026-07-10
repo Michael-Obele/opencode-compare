@@ -31,7 +31,11 @@
 						? 'bg-red-500/5'
 						: m.pricing.source === 'go-docs'
 							? 'bg-emerald-500/5'
-							: ''}"
+							: m.pricing.source === 'go-api'
+								? 'bg-blue-500/5'
+								: m.pricing.source === 'modelgrep'
+									? 'bg-amber-500/5'
+									: ''}"
 				>
 					<td class="p-2 font-medium text-foreground">{m.name}</td>
 					<td class="p-2 tabular-nums text-muted-foreground">

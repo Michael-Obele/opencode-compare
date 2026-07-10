@@ -67,7 +67,7 @@ import type { BurnRate } from '$lib/burn';
 export type { BurnRate };
 
 /** Where model pricing data came from */
-export type PricingSource = 'go-docs' | 'modelgrep' | 'unknown';
+export type PricingSource = 'go-docs' | 'go-api' | 'modelgrep' | 'unknown';
 
 /** Named burn efficiency band */
 export type BurnBand = 'excellent' | 'good' | 'moderate' | 'high' | 'extreme';
