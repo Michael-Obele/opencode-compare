@@ -119,7 +119,20 @@ export interface ModelBenchmarks {
 	codeArena: number | null;
 	/** All raw scores keyed by benchmark name */
 	allScores: Record<string, number>;
+	/** Per-field source tracking for multi-source blending */
+	_meta?: BenchmarkMeta;
 }
+
+/** Tracks which source each benchmark field was derived from. */
+export interface BenchmarkMeta {
+	coding: { source: BenchmarkSource };
+	reasoning: { source: BenchmarkSource };
+	math: { source: BenchmarkSource };
+	sweBenchVerified: { source: BenchmarkSource };
+}
+
+/** Possible sources for a benchmark value. */
+export type BenchmarkSource = 'modelgrep' | 'llm-stats' | 'blended' | null;
 
 export interface ModelSpeed {
 	tokensPerSecond: number;
@@ -191,4 +204,29 @@ export interface GoModelEntry {
 	object: 'model';
 	created: number;
 	owned_by: 'opencode';
+}
+
+// llm-stats.com API response types
+
+export interface LlmStatsModel {
+	id: string;
+	name: string;
+	description: string;
+	organization: {
+		id: string;
+		name: string;
+	} | null;
+	family: string | null;
+	open_weight: boolean;
+	model_type: string;
+	modalities: string[];
+	context_window: number | null;
+	param_count: number | null;
+	training_tokens: number | null;
+	knowledge_cutoff: string | null;
+	release_date: string | null;
+	/** Benchmark scores keyed by benchmark name (0-1 scale). */
+	top_scores: Record<string, number>;
+	source: string;
+	url: string;
 }

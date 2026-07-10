@@ -1,7 +1,7 @@
 /**
  * Inference engine orchestrator.
  * Glues together pricing, quota, burn, scoring, and tags
- * modules to produce an enriched GoModel from modelgrep data.
+ * modules to produce an enriched GoModel from modelgrep and llm-stats data.
  */
 
 import { burnRateFromPrice, type BurnRate } from '$lib/burn';
@@ -10,7 +10,8 @@ import type {
 	ModelgrepModelData,
 	MigrationHint,
 	ModelPricing,
-	ModelSpeed
+	ModelSpeed,
+	LlmStatsModel
 } from '$lib/types/models';
 import { goEndpointType, goEndpointUrl, goIdToName } from './opencode-go';
 import { inferPricing } from './pricing';
@@ -18,12 +19,14 @@ import { estimateQuota, DEFAULT_QUOTA_INPUTS } from './quota';
 import { inferBurnDetails } from './burn';
 import { computeScenarioScores } from './scoring';
 import { computeTags } from './tags';
+import { blendBenchmarks } from './blend';
 
-/** Enrich a Go model ID with modelgrep data and optional docs pricing. */
+/** Enrich a Go model ID with modelgrep data, llm-stats data, and optional docs pricing. */
 export function inferModel(
 	goId: string,
 	mgModel: ModelgrepModelData | null,
-	docsPricing?: Record<string, ModelPricing>
+	docsPricing?: Record<string, ModelPricing>,
+	lsModel?: LlmStatsModel | null
 ): GoModel {
 	const name = goIdToName(goId);
 	const pricing = inferPricing(goId, mgModel, docsPricing);
@@ -39,9 +42,11 @@ export function inferModel(
 		DEFAULT_QUOTA_INPUTS.cachedInputTokens
 	);
 
-	const benchmarks = extractModelgrepBenchmarks(mgModel);
+	const { benchmarks, meta } = blendBenchmarks(mgModel, lsModel ?? null);
+	benchmarks._meta = meta;
+
 	const speed = extractModelgrepSpeed(mgModel);
-	const tags = computeTags(benchmarks, burnDetails, speed, mgModel);
+	const tags = computeTags(benchmarks, burnDetails, speed, mgModel, lsModel);
 	const migrationHints = inferMigrationHints(goId, pricing, benchmarks);
 	const scenarioScores = computeScenarioScores({
 		goId,
@@ -75,25 +80,13 @@ export function inferModel(
 		scenarioScores,
 		endpoint: goEndpointType(goId),
 		endpointUrl: goEndpointUrl(goId),
-		isNew: mgModel === null,
+		isNew: mgModel === null && lsModel === null,
 		modelgrepId: mgModel?.id ?? null,
 		fetchedAt: Date.now()
 	};
 }
 
 // ─── Extract modelgrep data ─────────────────────────────────────────────
-
-function extractModelgrepBenchmarks(mgModel: ModelgrepModelData | null): GoModel['benchmarks'] {
-	const aa = mgModel?.benchmarks?.artificial_analysis;
-	return {
-		coding: aa?.coding ?? null,
-		reasoning: aa?.intelligence ?? null,
-		math: null,
-		sweBenchVerified: aa?.scicode ?? null,
-		codeArena: null,
-		allScores: {}
-	};
-}
 
 function extractModelgrepSpeed(mgModel: ModelgrepModelData | null): ModelSpeed | null {
 	if (!mgModel?.performance) return null;

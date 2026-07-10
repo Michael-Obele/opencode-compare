@@ -26,9 +26,9 @@
 {:else if source === 'modelgrep'}
 	<span
 		class="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20"
-		title="Pricing from modelgrep / OpenRouter"
+		title="Pricing from modelgrep.com (aggregated from OpenRouter, Artificial Analysis, and other sources)"
 	>
-		OpenRouter
+		Modelgrep
 	</span>
 {:else if source === 'unknown'}
 	<span

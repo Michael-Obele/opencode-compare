@@ -35,7 +35,7 @@
 		return result;
 	});
 
-	type SortKey = 'name' | 'coding' | 'price' | 'quota' | 'fit';
+	type SortKey = 'name' | 'coding' | 'price' | 'quota' | 'fit' | 'burn' | 'score';
 
 	let sortKey = $state<SortKey>('coding');
 	let sortDir = $state<'asc' | 'desc'>('desc');
@@ -51,8 +51,9 @@
 		key: SortKey,
 		sortDir: 'asc' | 'desc'
 	): number {
-		const effectiveKey = scenario && key !== 'fit' ? 'fit' : key;
-		const cmp = compareByKey(a, b, scenario, effectiveKey);
+		// Sort and scenario are independent: let user sort by any key
+		// while scenario filters which models are relevant.
+		const cmp = compareByKey(a, b, scenario, key);
 		return sortDir === 'asc' ? cmp : -cmp;
 	}
 
@@ -68,6 +69,10 @@
 				return a.quota.requestsPer5h - b.quota.requestsPer5h;
 			case 'fit':
 				return scenarioScore(b, scenario) - scenarioScore(a, scenario);
+			case 'burn':
+				return (a.burnDetails.score ?? 0) - (b.burnDetails.score ?? 0);
+			case 'score':
+				return (a.burnDetails.score ?? 0) - (b.burnDetails.score ?? 0);
 		}
 	}
 
@@ -89,11 +94,6 @@
 			return { icon: ArrowUpDown, active: false };
 		}
 		return { icon: sortDir === 'asc' ? ArrowUp : ArrowDown, active: true };
-	}
-
-	function fitSegments(score: number): number {
-		const thresholds = [80, 60, 40, 20];
-		return thresholds.findIndex((t) => score >= t);
 	}
 </script>
 
@@ -125,10 +125,30 @@
 						/>
 					</span>
 				</Table.Head>
-				<Table.Head class="whitespace-nowrap text-muted-foreground">Burn</Table.Head>
-				<Table.Head class="hidden whitespace-nowrap text-muted-foreground md:table-cell"
-					>Score</Table.Head
+				{@const burnSort = sortIndicator('burn')}
+				<Table.Head
+					class="cursor-pointer whitespace-nowrap text-muted-foreground hover:text-foreground"
+					onclick={() => toggleSort('burn')}
 				>
+					<span class="inline-flex items-center gap-1">
+						Burn
+						<burnSort.icon
+							class="size-3 {burnSort.active ? 'text-foreground' : 'text-muted-foreground/40'}"
+						/>
+					</span>
+				</Table.Head>
+				{@const scoreSort = sortIndicator('score')}
+				<Table.Head
+					class="hidden cursor-pointer whitespace-nowrap text-muted-foreground hover:text-foreground md:table-cell"
+					onclick={() => toggleSort('score')}
+				>
+					<span class="inline-flex items-center gap-1">
+						Score
+						<scoreSort.icon
+							class="size-3 {scoreSort.active ? 'text-foreground' : 'text-muted-foreground/40'}"
+						/>
+					</span>
+				</Table.Head>
 				{@const quotaSort = sortIndicator('quota')}
 				<Table.Head
 					class="cursor-pointer whitespace-nowrap text-muted-foreground hover:text-foreground"
@@ -249,15 +269,17 @@
 					</Table.Cell>
 					{#if scenario}
 						{@const score = model.scenarioScores[scenario as keyof GoModel['scenarioScores']] ?? 0}
-						{@const segments = fitSegments(score)}
 						<Table.Cell>
 							<div class="flex items-center gap-1.5">
-								<div class="flex gap-0.5">
-									{#each Array(4) as _, i (i)}
-										<div
-											class="h-2 w-2 rounded-sm {i < segments ? 'bg-violet-500' : 'bg-muted'}"
-										></div>
-									{/each}
+								<div class="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+									<div
+										class="h-full rounded-full {score >= 60
+											? 'bg-violet-500'
+											: score >= 40
+												? 'bg-amber-500'
+												: 'bg-red-500'}"
+										style="width: {score}%"
+									></div>
 								</div>
 								<span class="text-xs tabular-nums text-muted-foreground">{score}</span>
 							</div>

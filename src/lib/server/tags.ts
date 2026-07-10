@@ -3,25 +3,27 @@ import type {
 	ModelBenchmarks,
 	ModelSpeed,
 	ModelTag,
-	BurnDetails
+	BurnDetails,
+	LlmStatsModel
 } from '$lib/types/models';
 
 export function computeTags(
 	benchmarks: ModelBenchmarks,
 	burnDetails: BurnDetails,
 	speed: ModelSpeed | null,
-	mgModel: ModelgrepModelData | null
+	mgModel: ModelgrepModelData | null,
+	lsModel?: LlmStatsModel | null
 ): ModelTag[] {
-	const ctx = mgModel?.context_length ?? 0;
+	const ctx = mgModel?.context_length ?? lsModel?.context_window ?? 0;
 	const builders = [
 		() => codingTags(benchmarks),
 		() => competitiveTags(benchmarks),
-		() => reasoningTags(mgModel),
+		() => reasoningTags(benchmarks, mgModel),
 		() => agenticTags(benchmarks, ctx),
 		() => contextTags(ctx),
 		() => budgetTags(burnDetails),
 		() => speedTags(speed),
-		() => newModelTag(mgModel)
+		() => newModelTag(mgModel, lsModel)
 	];
 
 	const tags = builders.flatMap((b) => b());
@@ -40,15 +42,21 @@ function codingTags(benchmarks: ModelBenchmarks): ModelTag[] {
 }
 
 function competitiveTags(benchmarks: ModelBenchmarks): ModelTag[] {
+	// sweBenchVerified is actually the SciCode benchmark (not SWE-bench)
 	if (benchmarks.sweBenchVerified != null && benchmarks.sweBenchVerified > 50) {
 		return [{ label: 'Competitive programming', icon: 'swords', source: 'computed' }];
 	}
 	return [];
 }
 
-function reasoningTags(mgModel: ModelgrepModelData | null): ModelTag[] {
-	const aaIntel = mgModel?.benchmarks?.artificial_analysis?.intelligence;
-	if (aaIntel != null && aaIntel > 30) {
+function reasoningTags(
+	benchmarks: ModelBenchmarks,
+	mgModel: ModelgrepModelData | null
+): ModelTag[] {
+	// Use blended reasoning score first, fall back to raw modelgrep AA intelligence
+	const reasoning =
+		benchmarks.reasoning ?? mgModel?.benchmarks?.artificial_analysis?.intelligence ?? null;
+	if (reasoning != null && reasoning > 30) {
 		return [{ label: 'Strong reasoning', icon: 'brain', source: 'ranking' }];
 	}
 	return [];
@@ -89,8 +97,12 @@ function speedTags(speed: ModelSpeed | null): ModelTag[] {
 	return [];
 }
 
-function newModelTag(mgModel: ModelgrepModelData | null): ModelTag[] {
-	if (!mgModel) {
+function newModelTag(
+	mgModel: ModelgrepModelData | null,
+	lsModel?: LlmStatsModel | null
+): ModelTag[] {
+	// A model is "new" only if neither source has data about it
+	if (!mgModel && !lsModel) {
 		return [{ label: 'New — benchmarking', icon: 'sparkles', source: 'computed' }];
 	}
 	return [];
