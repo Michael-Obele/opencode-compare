@@ -156,7 +156,7 @@
 					<section>
 						<h3 class="mb-2 text-sm font-medium text-muted-foreground">Benchmarks</h3>
 						<div class="space-y-3">
-							{#each [{ label: 'Coding', value: model.benchmarks.coding }, { label: 'Reasoning', value: model.benchmarks.reasoning }, { label: 'Math', value: model.benchmarks.math }, { label: 'SWE-bench', value: model.benchmarks.sweBenchVerified }] as bench (bench.label)}
+							{#each [{ label: 'Coding', value: model.benchmarks.coding }, { label: 'Reasoning', value: model.benchmarks.reasoning }, { label: 'Math', value: model.benchmarks.math }, { label: 'SciCode', value: model.benchmarks.sweBenchVerified }] as bench (bench.label)}
 								{#if bench.value !== null}
 									<div>
 										<div class="mb-1 flex justify-between text-sm">
@@ -239,9 +239,18 @@
 								class={buttonVariants({ variant: 'outline', size: 'sm' })}
 							>
 								<ExternalLink class="size-3.5" />
-								Compare on modelgrep
+								View on modelgrep
 							</a>
 						{/if}
+						<a
+							href={'https://llm-stats.com/models/' + model.id}
+							target="_blank"
+							rel="noopener noreferrer"
+							class={buttonVariants({ variant: 'outline', size: 'sm' })}
+						>
+							<ExternalLink class="size-3.5" />
+							View on llm-stats
+						</a>
 					</div>
 				</div>
 			{:else}
