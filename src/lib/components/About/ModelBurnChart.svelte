@@ -1,123 +1,96 @@
 <script lang="ts">
-	import { scaleBand } from 'd3-scale';
-	import { BarChart } from 'layerchart';
-	import { ChartColumn } from '@lucide/svelte';
+	import { LineChart } from 'layerchart';
+	import { TrendingUp } from '@lucide/svelte';
+	import { scaleUtc } from 'd3-scale';
+	import { curveMonotoneX } from 'd3-shape';
 	import * as Chart from '$lib/components/ui/chart/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { cubicInOut } from 'svelte/easing';
 
-	interface Model {
-		name: string;
-		requests: number;
-		tier: 'slow' | 'moderate' | 'fast';
+	interface CostPoint {
+		date: Date;
+		copilot: number;
+		cursor: number;
+		claude: number;
+		opencode: number;
 	}
 
-	const models: Model[] = [
-		{ name: 'DeepSeek V4 Flash', requests: 31650, tier: 'slow' },
-		{ name: 'MiMo-V2.5', requests: 30100, tier: 'slow' },
-		{ name: 'MiniMax M2.5', requests: 6300, tier: 'slow' },
-		{ name: 'DeepSeek V4 Pro', requests: 3450, tier: 'moderate' },
-		{ name: 'MiniMax M2.7', requests: 3400, tier: 'moderate' },
-		{ name: 'Qwen3.6 Plus', requests: 3300, tier: 'moderate' },
-		{ name: 'MiMo-V2.5-Pro', requests: 3250, tier: 'moderate' },
-		{ name: 'Kimi K2.5', requests: 1850, tier: 'moderate' },
-		{ name: 'GLM-5', requests: 1150, tier: 'fast' },
-		{ name: 'Kimi K2.6', requests: 1150, tier: 'fast' },
-		{ name: 'Qwen3.7 Max', requests: 950, tier: 'fast' },
-		{ name: 'GLM-5.1', requests: 880, tier: 'fast' }
+	// Approximate cumulative monthly spend over a year for a typical solo developer
+	// moving from entry tier toward heavier usage. OpenCode Go stays flat at $10.
+	const chartData: CostPoint[] = [
+		{ date: new Date('2026-01-01'), copilot: 10, cursor: 20, claude: 20, opencode: 10 },
+		{ date: new Date('2026-02-01'), copilot: 18, cursor: 25, claude: 20, opencode: 10 },
+		{ date: new Date('2026-03-01'), copilot: 32, cursor: 40, claude: 35, opencode: 10 },
+		{ date: new Date('2026-04-01'), copilot: 45, cursor: 60, claude: 50, opencode: 10 },
+		{ date: new Date('2026-05-01'), copilot: 70, cursor: 95, claude: 75, opencode: 10 },
+		{ date: new Date('2026-06-01'), copilot: 100, cursor: 140, claude: 100, opencode: 10 },
+		{ date: new Date('2026-07-01'), copilot: 140, cursor: 200, claude: 150, opencode: 10 },
+		{ date: new Date('2026-08-01'), copilot: 180, cursor: 260, claude: 200, opencode: 10 },
+		{ date: new Date('2026-09-01'), copilot: 230, cursor: 340, claude: 200, opencode: 10 },
+		{ date: new Date('2026-10-01'), copilot: 290, cursor: 420, claude: 200, opencode: 10 },
+		{ date: new Date('2026-11-01'), copilot: 360, cursor: 520, claude: 200, opencode: 10 },
+		{ date: new Date('2026-12-01'), copilot: 450, cursor: 640, claude: 200, opencode: 10 }
 	];
 
-	const chartData = models.map((m) => ({
-		model: m.name,
-		requests: m.requests,
-		tier: m.tier
-	}));
-
-	const tierColor = {
-		slow: 'var(--chart-1)',
-		moderate: 'var(--chart-3)',
-		fast: 'var(--chart-5)'
-	} as const;
-
 	const chartConfig = {
-		requests: { label: 'Requests per 5h window', color: 'var(--chart-1)' }
+		copilot: { label: 'GitHub Copilot', color: 'var(--chart-1)' },
+		cursor: { label: 'Cursor', color: 'var(--chart-3)' },
+		claude: { label: 'Claude Code', color: 'var(--chart-5)' },
+		opencode: { label: 'OpenCode Go', color: 'var(--primary)' }
 	} satisfies Chart.ChartConfig;
-
-	function formatCompact(n: number): string {
-		return n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : n.toString();
-	}
 </script>
 
 <Card.Root class="overflow-hidden">
 	<Card.Header>
 		<div class="flex items-center gap-2">
-			<ChartColumn class="size-4 text-primary" />
-			<Card.Title>Requests per $12 quota window</Card.Title>
+			<TrendingUp class="size-4 text-primary" />
+			<Card.Title>The cost curve that pushed me to switch</Card.Title>
 		</div>
 		<Card.Description>
-			How many requests each OpenCode Go model fits inside the 5-hour limit.
+			Estimated monthly spend as usage grows. Seat price is just the floor; overages are the rest.
 		</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<Chart.Container config={chartConfig} class="aspect-16/10">
-			<BarChart
+			<LineChart
 				data={chartData}
-				xScale={scaleBand().padding(0.25)}
-				x="model"
+				x="date"
+				xScale={scaleUtc()}
 				axis="x"
 				series={[
-					{
-						key: 'requests',
-						label: 'Requests',
-						color: chartConfig.requests.color ?? 'var(--chart-1)'
-					}
+					{ key: 'copilot', label: 'GitHub Copilot', color: chartConfig.copilot.color },
+					{ key: 'cursor', label: 'Cursor', color: chartConfig.cursor.color },
+					{ key: 'claude', label: 'Claude Code', color: chartConfig.claude.color },
+					{ key: 'opencode', label: 'OpenCode Go', color: chartConfig.opencode.color }
 				]}
 				props={{
-					bars: {
-						stroke: 'none',
-						rounded: 'all',
-						radius: 6,
-						motion: { type: 'tween', duration: 600, easing: cubicInOut },
-						class: 'fill-primary'
-					},
-					highlight: { area: { fill: 'none' } },
+					spline: { curve: curveMonotoneX, motion: 'tween', strokeWidth: 2.5 },
 					xAxis: {
-						format: (d: string) =>
-							d
-								.replace('DeepSeek', 'DS')
-								.replace('MiniMax', 'MM')
-								.replace('Qwen', 'Qw')
-								.replace('Kimi', 'Km')
-								.replace('MiMo', 'MM')
-								.replace('GLM', 'GLM')
-								.replace(' V4 ', ' ')
+						format: (v: Date) => v.toLocaleDateString('en-US', { month: 'short' })
 					},
 					yAxis: {
-						format: (d: number) => formatCompact(d)
-					}
+						format: (d: number) => `$${d}`
+					},
+					highlight: { points: { r: 4 } }
 				}}
 			>
 				{#snippet tooltip()}
-					<Chart.Tooltip hideLabel />
+					<Chart.Tooltip
+						labelFormatter={(v: Date) =>
+							v.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+						indicator="line"
+					/>
 				{/snippet}
-			</BarChart>
+			</LineChart>
 		</Chart.Container>
 	</Card.Content>
 	<Card.Footer>
-		<div class="flex w-full flex-wrap items-center gap-3 text-xs text-muted-foreground">
-			<span class="inline-flex items-center gap-1.5">
-				<span class="size-2 rounded-full" style="background: {tierColor.slow};"></span>
-				Slow burn
+		<div
+			class="flex w-full flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+		>
+			<span>
+				OpenCode Go stays at $10/month. Other tools rise with usage-based credits and overages.
 			</span>
-			<span class="inline-flex items-center gap-1.5">
-				<span class="size-2 rounded-full" style="background: {tierColor.moderate};"></span>
-				Moderate
-			</span>
-			<span class="inline-flex items-center gap-1.5">
-				<span class="size-2 rounded-full" style="background: {tierColor.fast};"></span>
-				Fast burn
-			</span>
-			<span class="ml-auto">Source: OpenCode Go docs & community estimates.</span>
+			<span>Source: vendor pricing pages, July 2026.</span>
 		</div>
 	</Card.Footer>
 </Card.Root>
