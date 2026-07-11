@@ -67,16 +67,6 @@
 	<div class="relative mx-auto max-w-6xl px-4 pb-6 pt-16 sm:pt-20">
 		<!-- Hero -->
 		<section class="mb-16 text-center">
-			<!-- Badge -->
-			<div class="animate-fade-in-up mb-6 inline-flex items-center gap-2">
-				<span
-					class="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary"
-				>
-					<Sparkles class="size-3" />
-					OpenCode Go Model Picker
-				</span>
-			</div>
-
 			<h1
 				class="animate-fade-in-up animation-delay-100 mb-5 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
 			>
