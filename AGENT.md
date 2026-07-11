@@ -100,7 +100,7 @@ Default to **Remote Functions** (experimental `@sveltejs/kit` features or standa
 
 ## Common Workflows
 
-- **Development**: `bun run dev`
+- Do not run `bun run dev`
 - **Type Checking**: `bun run check`
 
 ## AI Agent Integration
