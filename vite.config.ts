@@ -28,5 +28,8 @@ export default defineConfig({
 				}
 			}
 		})
-	]
+	],
+	ssr: {
+		noExternal: ['@dagrejs/dagre']
+	}
 });
