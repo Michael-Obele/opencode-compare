@@ -28,7 +28,7 @@
 	onMount(() => {
 		const t = setTimeout(() => {
 			displayValue = burnSpeed;
-		}, 50);
+		}, 500);
 		return () => clearTimeout(t);
 	});
 
@@ -37,7 +37,7 @@
 		if (burnSpeed > 0) {
 			const t = setTimeout(() => {
 				displayValue = burnSpeed;
-			}, 50);
+			}, 500);
 			return () => clearTimeout(t);
 		}
 	});
