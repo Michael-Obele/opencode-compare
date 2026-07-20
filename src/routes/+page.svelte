@@ -196,7 +196,7 @@
 				selectedModelId={selectedModel?.id}
 				onSelectModel={openDrawer}
 			/>
-			<ModelDrawer model={selectedModel} bind:open={drawerOpen} />
+			<ModelDrawer {models} model={selectedModel} bind:open={drawerOpen} />
 		{:catch err}
 			<div class="rounded-xl border border-red-500/20 bg-red-500/5 p-8 text-center">
 				<div class="text-red-400">Failed to load model data</div>

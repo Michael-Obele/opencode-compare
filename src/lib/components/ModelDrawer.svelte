@@ -6,13 +6,16 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import BurnBadge from './BurnBadge.svelte';
 	import FallbackBadge from './FallbackBadge.svelte';
+	import BurnGauge from './BurnGauge.svelte';
+	import ModelScatterContext from './ModelScatterContext.svelte';
 
 	interface Props {
+		models: GoModel[];
 		model: GoModel | null;
 		open?: boolean;
 	}
 
-	let { model, open = $bindable(false) }: Props = $props();
+	let { models, model, open = $bindable(false) }: Props = $props();
 
 	let copied = $state(false);
 
@@ -68,25 +71,17 @@
 				</Drawer.Header>
 
 				<div class="px-4 pb-2">
-					<div class="rounded-lg border border-border bg-muted/30 p-3 text-sm">
-						<div class="font-medium text-foreground">
-							{#if model.burnDetails?.band != null}
-								{model.burnDetails.score} burn score — ~{model.quota.requestsPer5h.toLocaleString()} requests
-								per $12 window
-							{:else}
-								Burn data unavailable — pricing unknown
-							{/if}
+					{#if model.burnDetails?.band != null}
+						<BurnGauge
+							score={model.burnDetails.score}
+							band={model.burnDetails.band}
+							requestsPerWindow={model.quota.requestsPer5h}
+						/>
+					{:else}
+						<div class="rounded-lg border border-border bg-muted/30 p-3 text-sm">
+							<div class="text-muted-foreground">Burn data unavailable — pricing unknown</div>
 						</div>
-						<div class="text-muted-foreground">
-							{#if model.burnDetails?.band === 'excellent' || model.burnDetails?.band === 'good'}
-								Use for high-volume, iterative work
-							{:else if model.burnDetails?.band === 'extreme' || model.burnDetails?.band === 'high'}
-								Best for short, focused sessions
-							{:else}
-								Balanced for daily use
-							{/if}
-						</div>
-					</div>
+					{/if}
 				</div>
 
 				{#if model.pricing.source === 'unknown'}
@@ -119,6 +114,11 @@
 								</div>
 							</div>
 						</div>
+					</section>
+
+					<!-- Context scatter -->
+					<section>
+						<ModelScatterContext {models} selectedModel={model} />
 					</section>
 
 					<!-- Quota usage -->

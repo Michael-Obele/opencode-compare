@@ -7,6 +7,9 @@
 	import Schematic from '$lib/components/About/Schematic.svelte';
 	import ReceiptBlock from '$lib/components/About/ReceiptBlock.svelte';
 	import ModelBurnChart from '$lib/components/About/ModelBurnChart.svelte';
+	import ScenarioRadarChart from '$lib/components/About/ScenarioRadarChart.svelte';
+	import PricePerformanceScatter from '$lib/components/About/PricePerformanceScatter.svelte';
+	import { getModels } from '$lib/remote/models.remote';
 	import {
 		ChevronLeft,
 		ExternalLink,
@@ -19,6 +22,7 @@
 	} from '@lucide/svelte';
 
 	let mounted = $state(false);
+	const modelsPromise = getModels();
 	onMount(() => {
 		mounted = true;
 	});
@@ -224,6 +228,18 @@
 			{/if}
 		</div>
 
+		<div class="mt-10">
+			{#await modelsPromise}
+				<div class="h-48 animate-pulse rounded-xl bg-muted"></div>
+			{:then models}
+				{#if mounted}
+					<div in:fade={{ duration: 500, delay: 300 }}>
+						<PricePerformanceScatter {models} />
+					</div>
+				{/if}
+			{/await}
+		</div>
+
 		<Callout variant="cyan" label="methodology note">
 			"Upstream" refers to the data aggregated at modelgrep.com (OpenRouter pricing + Artificial
 			Analysis benchmarks) and llm-stats.com (benchmark scores, rankings, and pricing), which tracks
@@ -255,19 +271,17 @@
 			</p>
 		</div>
 
-		<!-- Worked example in monospace -->
-		<div class="my-6 rounded-lg border border-border bg-card/40 p-5">
-			<div class="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-				worked example
-			</div>
-			<pre
-				class="overflow-x-auto font-mono text-xs leading-relaxed text-foreground/85">{`deepseek-v4-pro  →  scenario(coding)
-  coding benchmark      : 78.2   (weight 0.55)
-  speed (tok/s)         :  8.5   (weight 0.20)
-  burn rate (favor cool) :  -3    (weight 0.15)
-  context window ≥ 256K  :  yes   (weight 0.10)
-                          ─────
-  fit score             : 87.3`}</pre>
+		<!-- Radar visualization -->
+		<div class="my-6">
+			{#await modelsPromise}
+				<div class="h-64 animate-pulse rounded-xl bg-muted"></div>
+			{:then models}
+				{#if mounted}
+					<div in:fade={{ duration: 500, delay: 200 }}>
+						<ScenarioRadarChart {models} />
+					</div>
+				{/if}
+			{/await}
 		</div>
 	</section>
 
